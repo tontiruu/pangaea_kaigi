@@ -1,4 +1,5 @@
 """OpenAI Responses API クライアント"""
+
 import asyncio
 from openai import AsyncOpenAI
 from typing import Optional
@@ -12,7 +13,7 @@ class OpenAIResponsesClient:
 
     def __init__(self, api_key: str):
         self.client = AsyncOpenAI(api_key=api_key)
-        self.model = "gpt-4.1-mini"
+        self.model = "gpt-5-nano"  # 最新の小型モデル
 
     async def create_response(
         self,
@@ -23,6 +24,9 @@ class OpenAIResponsesClient:
         """
         OpenAI Responses API でレスポンスを生成
 
+        Responses APIを使用して会話状態を管理します。
+        previous_response_idを指定することで会話を継続できます。
+
         Args:
             input_text: 入力プロンプト
             previous_response_id: 前回のresponse_id（会話を継続する場合）
@@ -32,36 +36,47 @@ class OpenAIResponsesClient:
             {"id": response_id, "content": content}
         """
         try:
+            # Responses API のパラメータ構築
             params = {
                 "model": self.model,
                 "input": input_text,
-                "store": store,
             }
 
+            # previous_response_idがある場合は追加
             if previous_response_id:
                 params["previous_response_id"] = previous_response_id
 
+            # storeパラメータを追加
+            if store:
+                params["store"] = True
+
+            # Responses API 呼び出し
             response = await self.client.responses.create(**params)
+
+            logger.info(f"OpenAI Response ID: {response.id}")
+            content = self._extract_content(response)
+            logger.info(f"Extracted content length: {len(content)}")
 
             return {
                 "id": response.id,
-                "content": self._extract_content(response),
+                "content": content,
             }
 
         except Exception as e:
-            logger.error(f"OpenAI API エラー: {e}")
+            logger.error(f"OpenAI API エラー: {e}", exc_info=True)
             raise
 
     def _extract_content(self, response) -> str:
         """レスポンスからコンテンツを抽出"""
         try:
-            if hasattr(response, "choices") and len(response.choices) > 0:
-                message = response.choices[0].message
-                if hasattr(message, "content"):
-                    return message.content
+            # Responses API の構造: response.output_text
+            if hasattr(response, "output_text") and response.output_text:
+                return response.output_text
+
+            logger.error(f"レスポンス構造が想定外: {response}")
             return ""
         except Exception as e:
-            logger.error(f"コンテンツ抽出エラー: {e}")
+            logger.error(f"コンテンツ抽出エラー: {e}", exc_info=True)
             return ""
 
     async def create_with_retry(
@@ -93,6 +108,8 @@ class OpenAIResponsesClient:
                 if attempt == max_retries - 1:
                     raise
 
-                delay = base_delay * (2 ** attempt)
-                logger.warning(f"リトライ {attempt + 1}/{max_retries}。{delay}秒後に再試行: {e}")
+                delay = base_delay * (2**attempt)
+                logger.warning(
+                    f"リトライ {attempt + 1}/{max_retries}。{delay}秒後に再試行: {e}"
+                )
                 await asyncio.sleep(delay)

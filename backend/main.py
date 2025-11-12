@@ -1,6 +1,14 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from config import settings
+from api.routes import router
+import logging
+
+# ロギング設定
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 
 app = FastAPI(
     title=settings.app_name,
@@ -17,16 +25,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# ルーターを含める
+app.include_router(router)
+
 
 @app.get("/")
 async def root():
     return {
-        "message": "Hello from FastAPI",
+        "message": "Pangaea Kaigi API - AI議論システム",
         "app_name": settings.app_name,
         "version": settings.api_version,
+        "docs": "/docs",
     }
-
-
-@app.get("/api/health")
-async def health_check():
-    return {"status": "healthy"}

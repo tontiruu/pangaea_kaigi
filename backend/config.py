@@ -1,5 +1,6 @@
-from pydantic_settings import BaseSettings
-from typing import List
+from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import field_validator, Field
+from typing import Union
 
 
 class Settings(BaseSettings):
@@ -12,25 +13,32 @@ class Settings(BaseSettings):
     host: str = "0.0.0.0"
     port: int = 8000
 
-    # CORS Settings
-    cors_origins: List[str] = ["http://localhost:3000", "http://127.0.0.1:3000"]
+    # CORS Settings - 文字列またはリストとして受け取る
+    cors_origins: Union[str, list[str]] = Field(
+        default="http://localhost:3000,http://127.0.0.1:3000"
+    )
+
+    # OpenAI Settings
+    openai_api_key: str = ""
 
     # Database (必要に応じて設定)
-    # database_url: str = ""
+    database_url: str = ""
 
     # Security (必要に応じて設定)
-    # secret_key: str = ""
-    # jwt_secret: str = ""
+    secret_key: str = ""
+    jwt_secret: str = ""
 
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
-        # CORS_ORIGINSをカンマ区切りの文字列として読み込む
-        @staticmethod
-        def parse_env_var(field_name: str, raw_val: str):
-            if field_name == "cors_origins":
-                return [origin.strip() for origin in raw_val.split(",")]
-            return raw_val
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+    )
+
+    @field_validator("cors_origins", mode="after")
+    @classmethod
+    def parse_cors_origins(cls, v):
+        if isinstance(v, str):
+            return [origin.strip() for origin in v.split(",")]
+        return v
 
 
 settings = Settings()
