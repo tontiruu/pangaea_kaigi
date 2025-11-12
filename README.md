@@ -1,0 +1,85 @@
+# Pangaea Kaigi
+
+フロントエンド（Next.js + React）とバックエンド（FastAPI）を含むフルスタックアプリケーション。
+
+## 構成
+
+```
+pangaea_kaigi/
+├── backend/          # FastAPI バックエンド
+│   ├── main.py       # FastAPIアプリケーション
+│   └── requirements.txt
+├── frontend/         # Next.js フロントエンド
+└── Makefile         # プロジェクト管理用Makefile
+```
+
+## セットアップ
+
+### 1. 環境変数の設定
+
+バックエンドの環境変数を設定します：
+
+```bash
+cd backend
+cp .env.example .env
+```
+
+必要に応じて`.env`ファイルを編集してください。
+
+### 2. 依存関係のインストール
+
+```bash
+make install
+```
+
+または個別に：
+
+```bash
+make install-backend  # バックエンドの依存関係
+make install-frontend # フロントエンドの依存関係
+```
+
+## 起動方法
+
+### 両方を同時に起動
+
+```bash
+make start
+```
+
+このコマンドで以下が起動します：
+- バックエンド: http://localhost:8000
+- フロントエンド: http://localhost:3000
+
+### 個別に起動
+
+```bash
+make dev-backend   # バックエンドのみ
+make dev-frontend  # フロントエンドのみ
+```
+
+## 停止方法
+
+```bash
+make stop
+```
+
+## API エンドポイント
+
+バックエンドは以下のエンドポイントを提供します：
+
+- `GET /` - ルートエンドポイント
+- `GET /api/health` - ヘルスチェック
+
+## 技術スタック
+
+### フロントエンド
+- Next.js 16
+- React
+- TypeScript
+- Tailwind CSS
+
+### バックエンド
+- Python 3.11+
+- FastAPI
+- Uvicorn
