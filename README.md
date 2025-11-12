@@ -8,9 +8,13 @@
 pangaea_kaigi/
 ├── backend/          # FastAPI バックエンド
 │   ├── main.py       # FastAPIアプリケーション
-│   └── requirements.txt
+│   ├── config.py     # 設定管理
+│   ├── requirements.txt
+│   ├── .env.example  # 環境変数のテンプレート
+│   └── .gitignore
 ├── frontend/         # Next.js フロントエンド
-└── Makefile         # プロジェクト管理用Makefile
+├── Makefile          # プロジェクト管理用Makefile
+└── README.md
 ```
 
 ## セットアップ
