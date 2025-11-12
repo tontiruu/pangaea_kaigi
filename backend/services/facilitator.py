@@ -1,4 +1,4 @@
-"""ファシリテーターAgent"""
+"""Facilitator Agent"""
 import json
 import uuid
 from typing import List, Optional, Callable, Awaitable
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 class Facilitator:
-    """ファシリテーターAgent"""
+    """Facilitator Agent"""
 
     def __init__(self, openai_client: OpenAIResponsesClient, agent_manager: AgentManager):
         self.openai_client = openai_client
@@ -25,16 +25,16 @@ class Facilitator:
         self.agent: Optional[Agent] = None
 
     def initialize(self):
-        """ファシリテーターAgentを初期化"""
+        """Initialize the Facilitator Agent"""
         self.agent = self.agent_manager.create_agent(
-            name="ファシリテーター",
-            perspective="議論を円滑に進め、全員の合意を促進する",
+            name="Facilitator",
+            perspective="Facilitate smooth discussion and promote consensus among all participants",
             role=AgentRole.FACILITATOR,
         )
-        logger.info("ファシリテーター初期化完了")
+        logger.info("Facilitator initialization complete")
 
     async def create_agenda(self, topic: str) -> List[AgendaItem]:
-        """議題からアジェンダを作成"""
+        """Create agenda from topic"""
         return await self.create_agenda_with_context(topic, "")
 
     async def create_agenda_with_context(
@@ -43,19 +43,19 @@ class Facilitator:
         context: str,
         on_stream: Optional[Callable[[str], Awaitable[None]]] = None,
     ) -> List[AgendaItem]:
-        """議題と背景知識からアジェンダを作成（ストリーミング対応）"""
+        """Create agenda from topic and background knowledge (with streaming support)"""
         prompt = FACILITATOR_CREATE_AGENDA.format(topic=topic)
 
-        # 背景知識がある場合はプロンプトに追加
+        # Add background knowledge to prompt if available
         if context:
-            prompt = f"{context}\n\n{prompt}\n\n上記の背景知識を考慮してアジェンダを作成してください。"
+            prompt = f"{context}\n\n{prompt}\n\nPlease create an agenda taking the above background knowledge into consideration."
 
-        # ストリーミングコールバック
+        # Streaming callback
         async def chunk_callback(chunk: str):
             if on_stream:
                 await on_stream(chunk)
 
-        # ストリーミング対応の場合
+        # When streaming is enabled
         if on_stream:
             response = await self.openai_client.create_with_streaming(
                 input_text=prompt,
@@ -84,16 +84,16 @@ class Facilitator:
                 )
                 agenda_items.append(agenda_item)
 
-            logger.info(f"アジェンダ作成完了: {len(agenda_items)}個")
+            logger.info(f"Agenda creation complete: {len(agenda_items)} items")
             return agenda_items
 
         except Exception as e:
-            logger.error(f"アジェンダ解析エラー: {e}")
-            logger.error(f"レスポンス内容: {response['content']}")
+            logger.error(f"Agenda parsing error: {e}")
+            logger.error(f"Response content: {response['content']}")
             raise
 
     async def generate_agents(self, topic: str, agenda: List[AgendaItem]) -> List[Agent]:
-        """議題とアジェンダから参加Agentを生成"""
+        """Generate participating agents from topic and agenda"""
         agenda_text = "\n".join([
             f"{item.order}. {item.title}: {item.description}"
             for item in agenda
@@ -123,24 +123,24 @@ class Facilitator:
                 )
                 agents.append(agent)
 
-            logger.info(f"Agent生成完了: {len(agents)}人")
+            logger.info(f"Agent generation complete: {len(agents)} agents")
             return agents
 
         except Exception as e:
-            logger.error(f"Agent解析エラー: {e}")
-            logger.error(f"レスポンス内容: {response['content']}")
+            logger.error(f"Agent parsing error: {e}")
+            logger.error(f"Response content: {response['content']}")
             raise
 
     def _extract_json(self, text: str) -> dict | list:
-        """テキストからJSON部分を抽出してパース"""
-        # マークダウンのコードブロックを削除
+        """Extract and parse JSON portion from text"""
+        # Remove markdown code blocks
         text = text.replace("```json", "").replace("```", "")
         text = text.strip()
 
         try:
             return json.loads(text)
         except json.JSONDecodeError:
-            # JSON部分を探す
+            # Find JSON portion
             start_idx = text.find("[")
             if start_idx == -1:
                 start_idx = text.find("{")

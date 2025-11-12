@@ -15,7 +15,7 @@ import {
 export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-teal-50 to-emerald-50 relative overflow-hidden">
-      {/* 背景装飾 */}
+      {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div
           className="absolute top-20 -left-20 w-96 h-96 rounded-full opacity-20 blur-3xl animate-float-up"
@@ -28,7 +28,7 @@ export default function Home() {
       </div>
 
       <main className="relative flex w-full max-w-7xl mx-auto flex-col items-center gap-16 p-8 py-20">
-        {/* ヘッダーセクション */}
+        {/* Header section */}
         <div className="text-center max-w-4xl animate-fade-in">
           <div
             className="inline-flex items-center justify-center w-20 h-20 rounded-3xl mb-6 shadow-2xl animate-float-up"
@@ -48,10 +48,10 @@ export default function Home() {
           </h1>
 
           <p className="text-2xl md:text-3xl font-semibold text-gray-700 mb-4 animate-fade-in" style={{ animationDelay: '0.2s' }}>
-            複数のAIエージェントによる
+            Multi-Agent AI Discussion System
           </p>
           <p className="text-xl md:text-2xl text-gray-600 mb-8 animate-fade-in" style={{ animationDelay: '0.3s' }}>
-            高速で緻密な意思決定支援システム
+            Fast and Precise Decision-Making Support
           </p>
 
           <Link
@@ -63,39 +63,39 @@ export default function Home() {
             }}
           >
             <FontAwesomeIcon icon={faRocket} className="text-2xl group-hover:rotate-12 transition-transform duration-300" />
-            議論を開始する
+            Start Discussion
             <FontAwesomeIcon icon={faArrowRight} className="text-lg group-hover:translate-x-2 transition-transform duration-300" />
           </Link>
         </div>
 
-        {/* 特徴カードグリッド */}
+        {/* Feature cards grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full max-w-6xl">
           {[
             {
               icon: faUsers,
-              title: '多様な視点',
-              description: '複数のAIエージェントが異なる観点から意見を出し合う',
+              title: 'Diverse Perspectives',
+              description: 'Multiple AI agents exchange opinions from different viewpoints',
               gradient: 'linear-gradient(to bottom right, var(--primary), var(--primary-dark))',
               delay: '0.5s'
             },
             {
               icon: faBolt,
-              title: '高速プロセス',
-              description: '独立した意見出し → 投票 → 説得プロセスで合意形成',
+              title: 'Fast Process',
+              description: 'Consensus building through independent opinions → voting → persuasion',
               gradient: 'linear-gradient(to bottom right, var(--primary-light), var(--primary))',
               delay: '0.6s'
             },
             {
               icon: faLightbulb,
-              title: 'リアルタイム観察',
-              description: '論理的で多角的な意思決定をリアルタイムで観察',
+              title: 'Real-time Observation',
+              description: 'Observe logical and multifaceted decision-making in real-time',
               gradient: 'linear-gradient(to bottom right, var(--primary), var(--primary-lighter))',
               delay: '0.7s'
             },
             {
               icon: faChartLine,
-              title: '記録と分析',
-              description: '意思決定プロセスが記録され、後から振り返り可能',
+              title: 'Recording & Analysis',
+              description: 'Decision-making process is recorded and can be reviewed later',
               gradient: 'linear-gradient(to bottom right, var(--primary-dark), var(--primary))',
               delay: '0.8s'
             },
@@ -117,11 +117,11 @@ export default function Home() {
           ))}
         </div>
 
-        {/* フッター情報 */}
+        {/* Footer info */}
         {/* <div className="text-center animate-fade-in" style={{ animationDelay: '0.9s' }}>
           <div className="inline-flex items-center gap-2 px-6 py-3 bg-white rounded-2xl shadow-lg border border-gray-200">
             <FontAwesomeIcon icon={faCheckCircle} style={{ color: 'var(--primary)' }} className="text-lg" />
-            <span className="text-sm font-semibold text-gray-700">MVP版 - OpenAI GPT-4.1-mini を使用</span>
+            <span className="text-sm font-semibold text-gray-700">MVP version - Powered by OpenAI GPT-4.1-mini</span>
           </div>
         </div> */}
       </main>

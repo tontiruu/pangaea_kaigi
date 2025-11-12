@@ -1,5 +1,5 @@
 /**
- * メッセージ吹き出しコンポーネント
+ * Message Bubble Component
  */
 import { Message, MessageType } from '@/types/message';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -73,15 +73,15 @@ export function MessageBubble({ message }: MessageBubbleProps) {
   const getMessageTypeLabel = () => {
     switch (message.message_type) {
       case MessageType.SYSTEM:
-        return 'システム';
+        return 'System';
       case MessageType.OPINION:
-        return '意見';
+        return 'Opinion';
       case MessageType.PERSUASION:
-        return '説得';
+        return 'Persuasion';
       case MessageType.RESPONSE:
-        return '応答';
+        return 'Response';
       case MessageType.CONCLUSION:
-        return '結論';
+        return 'Conclusion';
       default:
         return '';
     }
@@ -116,7 +116,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
               </span>
             )}
             <span className="text-xs text-gray-500 ml-auto font-medium">
-              {new Date(message.timestamp).toLocaleTimeString('ja-JP')}
+              {new Date(message.timestamp).toLocaleTimeString('en-US')}
             </span>
           </div>
           <div className="text-sm text-gray-800 whitespace-pre-wrap break-words leading-relaxed">

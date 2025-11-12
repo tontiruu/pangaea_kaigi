@@ -1,5 +1,5 @@
 /**
- * 議論ページ
+ * Discussion Page
  */
 'use client';
 
@@ -51,7 +51,7 @@ export default function DiscussionPage() {
 
   return (
     <div className="h-screen flex flex-col gradient-mesh">
-      {/* ヘッダー */}
+      {/* Header */}
       <header className="glass border-b border-white/10 animate-slide-down">
         <div className="max-w-7xl mx-auto px-6 py-5">
           <div className="flex items-center justify-between">
@@ -63,7 +63,7 @@ export default function DiscussionPage() {
                 <h1 className="text-xl font-bold text-gray-900 tracking-tight">
                   Pangaea Kaigi
                 </h1>
-                <p className="text-xs text-gray-500">AI会議システム</p>
+                <p className="text-xs text-gray-500">AI Discussion System</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -84,7 +84,7 @@ export default function DiscussionPage() {
                   }}
                 />
                 <span className="text-xs font-medium text-gray-700">
-                  {connected ? '接続中' : '切断'}
+                  {connected ? 'Connected' : 'Disconnected'}
                 </span>
               </div>
             </div>
@@ -92,7 +92,7 @@ export default function DiscussionPage() {
           {topic && (
             <div className="mt-3 px-4 py-2 rounded-lg bg-gradient-to-r from-emerald-50 to-teal-50 border border-[#00D4A8]/30 animate-card-pop" style={{ animationDelay: '0.1s' }}>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-medium" style={{ color: 'var(--primary-dark)' }}>議題</span>
+                <span className="text-xs font-medium" style={{ color: 'var(--primary-dark)' }}>Topic</span>
                 <span className="text-sm font-semibold text-gray-800">{topic}</span>
               </div>
             </div>
@@ -100,16 +100,16 @@ export default function DiscussionPage() {
         </div>
       </header>
 
-      {/* サイドバー: アジェンダと参加者 */}
+      {/* Sidebar: Agenda and Participants */}
       {started && (
         <div className="flex flex-1 overflow-hidden">
           <aside className="w-80 glass border-r border-white/10 overflow-y-auto animate-slide-in">
-            {/* アジェンダ */}
+            {/* Agenda */}
             {agenda.length > 0 && (
               <div className="p-5 border-b border-white/10">
                 <div className="flex items-center gap-2 mb-4">
                   <div className="w-1 h-5 rounded-full" style={{ background: 'linear-gradient(to bottom, var(--primary), var(--primary-dark))' }}></div>
-                  <h3 className="font-bold text-gray-800 text-sm tracking-wide uppercase">アジェンダ</h3>
+                  <h3 className="font-bold text-gray-800 text-sm tracking-wide uppercase">Agenda</h3>
                 </div>
                 <div className="space-y-2.5">
                   {agenda.map((item, index) => (
@@ -160,13 +160,13 @@ export default function DiscussionPage() {
               </div>
             )}
 
-            {/* 参加者 */}
+            {/* Participants */}
             {agents.length > 0 && (
               <div className="p-5">
                 <div className="flex items-center gap-2 mb-4">
                   <div className="w-1 h-5 rounded-full" style={{ background: 'linear-gradient(to bottom, var(--primary-light), var(--primary))' }}></div>
                   <h3 className="font-bold text-gray-800 text-sm tracking-wide uppercase">
-                    参加者
+                    Participants
                   </h3>
                   <span className="ml-auto px-2 py-0.5 text-white text-xs font-bold rounded-full" style={{ background: 'linear-gradient(to right, var(--primary), var(--primary-dark))' }}>
                     {agents.length}
@@ -197,47 +197,47 @@ export default function DiscussionPage() {
             )}
           </aside>
 
-          {/* メインチャットエリア */}
+          {/* Main chat area */}
           <main className="flex-1 flex flex-col">
-            {/* フェーズ表示 */}
+            {/* Phase display */}
             {currentPhase && (
               <div className="backdrop-blur-sm px-6 py-4 border-b border-white/10 animate-slide-down" style={{ background: 'linear-gradient(to right, rgba(0, 212, 168, 0.08), rgba(51, 224, 186, 0.08))' }}>
                 <div className="flex items-center gap-3">
                   <div className="flex items-center gap-2">
                     <FontAwesomeIcon icon={faCircle} className="text-xs animate-pulse" style={{ color: 'var(--primary)' }} />
                     <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      現在のフェーズ
+                      Current Phase
                     </span>
                   </div>
                   <span className="px-4 py-1.5 bg-white/70 backdrop-blur-sm rounded-full font-bold text-sm text-gray-800 shadow-sm border border-white/30 flex items-center gap-2">
                     {currentPhase === 'independent_opinions' && (
                       <>
                         <FontAwesomeIcon icon={faLightbulb} style={{ color: 'var(--accent-warning)' }} />
-                        独立意見出し
+                        Independent Opinions
                       </>
                     )}
                     {currentPhase === 'voting' && (
                       <>
                         <FontAwesomeIcon icon={faVoteYea} style={{ color: 'var(--primary)' }} />
-                        投票
+                        Voting
                       </>
                     )}
                     {currentPhase === 'persuasion' && (
                       <>
                         <FontAwesomeIcon icon={faHandshake} style={{ color: 'var(--primary-dark)' }} />
-                        説得プロセス
+                        Persuasion Process
                       </>
                     )}
                     {currentPhase === 'agenda_creation' && (
                       <>
                         <FontAwesomeIcon icon={faClipboardList} style={{ color: 'var(--primary)' }} />
-                        アジェンダ作成
+                        Agenda Creation
                       </>
                     )}
                     {currentPhase === 'agent_generation' && (
                       <>
                         <FontAwesomeIcon icon={faUsers} style={{ color: 'var(--primary-dark)' }} />
-                        参加者選定
+                        Participant Selection
                       </>
                     )}
                   </span>
@@ -245,7 +245,7 @@ export default function DiscussionPage() {
               </div>
             )}
 
-            {/* 投票結果表示 */}
+            {/* Voting results display */}
             {votingResult && votingResult.opinions && votingResult.opinions.length > 0 && (
               <div className="backdrop-blur-sm border-b border-white/10 animate-slide-down" style={{ background: 'linear-gradient(to right, rgba(0, 212, 168, 0.08), rgba(51, 224, 186, 0.08))', animationDelay: '0.1s' }}>
                 <button
@@ -257,11 +257,11 @@ export default function DiscussionPage() {
                       <FontAwesomeIcon icon={faVoteYea} className="text-white text-sm" />
                     </div>
                     <h3 className="font-bold text-gray-800 text-sm">
-                      投票結果
+                      Voting Results
                     </h3>
                   </div>
                   <span className="text-gray-600 text-sm font-medium transition-transform group-hover:scale-110">
-                    {showVotingResult ? '▼ 閉じる' : '▶ 開く'}
+                    {showVotingResult ? '▼ Close' : '▶ Open'}
                   </span>
                 </button>
 
@@ -271,7 +271,7 @@ export default function DiscussionPage() {
                       .filter((op) => op.votes > 0)
                       .sort((a, b) => b.votes - a.votes)
                       .map((opinion, index) => {
-                        // この意見に投票した人を取得
+                        // Get voters for this opinion
                         const voters = votingResult.vote_details
                           .filter((v) => v.opinion_id === opinion.id)
                           .map((v) => v.voter_name);
@@ -307,7 +307,7 @@ export default function DiscussionPage() {
                                   </span>
                                   <div className="flex items-center gap-2 mt-0.5">
                                     <span className="text-xs font-bold" style={{ color: 'var(--primary-dark)' }}>
-                                      {opinion.votes}票
+                                      {opinion.votes} votes
                                     </span>
                                     {voters.length > 0 && (
                                       <span className="text-xs text-gray-500">
@@ -328,7 +328,7 @@ export default function DiscussionPage() {
 
             <ChatContainer messages={messages} />
 
-            {/* 最終結論 */}
+            {/* Final conclusion */}
             {finalConclusion && (
               <div className="p-8 border-t border-white/30 animate-float-up" style={{ background: 'linear-gradient(to bottom right, rgba(0, 212, 168, 0.1), rgba(51, 224, 186, 0.1))' }}>
                 <div className="max-w-4xl mx-auto">
@@ -337,7 +337,7 @@ export default function DiscussionPage() {
                       <FontAwesomeIcon icon={faCheckCircle} className="text-white text-lg" />
                     </div>
                     <h3 className="font-bold text-xl text-gray-800">
-                      最終結論
+                      Final Conclusion
                     </h3>
                   </div>
                   <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-white/30">
@@ -352,7 +352,7 @@ export default function DiscussionPage() {
         </div>
       )}
 
-      {/* 初期画面: 議題入力 */}
+      {/* Initial screen: Topic input */}
       {!started && (
         <div className="flex-1 flex items-center justify-center p-6">
           <div className="animate-float-up" style={{ animationDelay: '0.2s' }}>
@@ -364,7 +364,7 @@ export default function DiscussionPage() {
         </div>
       )}
 
-      {/* エラー表示 */}
+      {/* Error display */}
       {error && (
         <div className="fixed bottom-6 right-6 text-white px-6 py-4 rounded-2xl shadow-2xl border border-white/20 backdrop-blur-sm animate-card-pop" style={{ background: 'linear-gradient(to right, var(--accent-error), #D32F2F)' }}>
           <div className="flex items-center gap-3">
