@@ -36,7 +36,7 @@ export function ChatContainer({ messages }: ChatContainerProps) {
         <div className="max-w-4xl mx-auto">
           {messages.map((message, index) => (
             <div
-              key={message.id}
+              key={`${message.id}-${index}`}
               style={{
                 animationDelay: `${Math.min(index * 50, 1000)}ms`
               }}

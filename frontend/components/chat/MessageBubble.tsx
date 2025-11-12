@@ -17,6 +17,41 @@ interface MessageBubbleProps {
 }
 
 export function MessageBubble({ message }: MessageBubbleProps) {
+  // Check if this is a loading/in-progress system message
+  const isLoadingMessage = () => {
+    if (message.message_type !== MessageType.SYSTEM) return false;
+
+    const content = message.content.toLowerCase();
+
+    // Completion keywords - if these are present, it's NOT loading
+    const completionKeywords = [
+      'retrieved',
+      'created',
+      'selected',
+      'completed',
+      'finished',
+      'done',
+      'ready'
+    ];
+
+    if (completionKeywords.some(keyword => content.includes(keyword))) {
+      return false;
+    }
+
+    // Loading keywords - these indicate in-progress
+    const loadingKeywords = [
+      'starting',
+      'creating',
+      'selecting',
+      'collecting',
+      'retrieving',
+      'searching',
+      '...'
+    ];
+
+    return loadingKeywords.some(keyword => content.includes(keyword));
+  };
+
   const getMessageStyle = () => {
     switch (message.message_type) {
       case MessageType.SYSTEM:
@@ -88,6 +123,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
   };
 
   const style = getMessageStyle();
+  const isLoading = isLoadingMessage();
 
   return (
     <div
@@ -104,7 +140,10 @@ export function MessageBubble({ message }: MessageBubbleProps) {
               background: style.avatarGradient
             }}
           >
-            <FontAwesomeIcon icon={style.icon} className="text-lg" />
+            <FontAwesomeIcon
+              icon={style.icon}
+              className={`text-lg ${isLoading ? 'animate-spin' : ''}`}
+            />
           </div>
         </div>
         <div className="flex-1 min-w-0">
