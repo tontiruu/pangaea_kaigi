@@ -1,4 +1,4 @@
-"""OpenAI Responses API クライアント"""
+"""OpenAI Responses API client"""
 
 import asyncio
 from openai import AsyncOpenAI
@@ -9,11 +9,11 @@ logger = logging.getLogger(__name__)
 
 
 class OpenAIResponsesClient:
-    """OpenAI Responses API クライアント"""
+    """OpenAI Responses API client"""
 
     def __init__(self, api_key: str):
         self.client = AsyncOpenAI(api_key=api_key)
-        self.model = "gpt-5-nano"  # 最新の小型モデル
+        self.model = "gpt-5-nano"  # Latest compact model
 
     async def create_response(
         self,
@@ -22,35 +22,35 @@ class OpenAIResponsesClient:
         store: bool = True,
     ) -> dict:
         """
-        OpenAI Responses API でレスポンスを生成
+        Generate response using OpenAI Responses API
 
-        Responses APIを使用して会話状態を管理します。
-        previous_response_idを指定することで会話を継続できます。
+        Manage conversation state using the Responses API.
+        Conversations can be continued by specifying previous_response_id.
 
         Args:
-            input_text: 入力プロンプト
-            previous_response_id: 前回のresponse_id（会話を継続する場合）
-            store: サーバー側に会話を保存するか
+            input_text: Input prompt
+            previous_response_id: Previous response_id (for continuing conversation)
+            store: Whether to save conversation on server side
 
         Returns:
             {"id": response_id, "content": content}
         """
         try:
-            # Responses API のパラメータ構築
+            # Build Responses API parameters
             params = {
                 "model": self.model,
                 "input": input_text,
             }
 
-            # previous_response_idがある場合は追加
+            # Add previous_response_id if present
             if previous_response_id:
                 params["previous_response_id"] = previous_response_id
 
-            # storeパラメータを追加
+            # Add store parameter
             if store:
                 params["store"] = True
 
-            # Responses API 呼び出し
+            # Call Responses API
             response = await self.client.responses.create(**params)
 
             logger.info(f"OpenAI Response ID: {response.id}")
@@ -63,20 +63,20 @@ class OpenAIResponsesClient:
             }
 
         except Exception as e:
-            logger.error(f"OpenAI API エラー: {e}", exc_info=True)
+            logger.error(f"OpenAI API error: {e}", exc_info=True)
             raise
 
     def _extract_content(self, response) -> str:
-        """レスポンスからコンテンツを抽出"""
+        """Extract content from response"""
         try:
-            # Responses API の構造: response.output_text
+            # Responses API structure: response.output_text
             if hasattr(response, "output_text") and response.output_text:
                 return response.output_text
 
-            logger.error(f"レスポンス構造が想定外: {response}")
+            logger.error(f"Unexpected response structure: {response}")
             return ""
         except Exception as e:
-            logger.error(f"コンテンツ抽出エラー: {e}", exc_info=True)
+            logger.error(f"Content extraction error: {e}", exc_info=True)
             return ""
 
     async def create_with_retry(
@@ -87,13 +87,13 @@ class OpenAIResponsesClient:
         base_delay: float = 1.0,
     ) -> dict:
         """
-        リトライ機能付きでレスポンスを生成
+        Generate response with retry functionality
 
         Args:
-            input_text: 入力プロンプト
-            previous_response_id: 前回のresponse_id
-            max_retries: 最大リトライ回数
-            base_delay: 基本待機時間（秒）
+            input_text: Input prompt
+            previous_response_id: Previous response_id
+            max_retries: Maximum number of retries
+            base_delay: Base wait time (seconds)
 
         Returns:
             {"id": response_id, "content": content}
@@ -110,7 +110,7 @@ class OpenAIResponsesClient:
 
                 delay = base_delay * (2**attempt)
                 logger.warning(
-                    f"リトライ {attempt + 1}/{max_retries}。{delay}秒後に再試行: {e}"
+                    f"Retry {attempt + 1}/{max_retries}. Retrying after {delay} seconds: {e}"
                 )
                 await asyncio.sleep(delay)
 
@@ -122,16 +122,16 @@ class OpenAIResponsesClient:
         on_chunk: Optional[Callable[[str], Awaitable[None]]] = None,
     ) -> dict:
         """
-        ストリーミングでレスポンスを生成
+        Generate response with streaming
 
         Args:
-            input_text: 入力プロンプト
-            previous_response_id: 前回のresponse_id
-            store: サーバー側に会話を保存するか
-            on_chunk: チャンクごとに呼ばれるコールバック関数
+            input_text: Input prompt
+            previous_response_id: Previous response_id
+            store: Whether to save conversation on server side
+            on_chunk: Callback function called for each chunk
 
         Returns:
-            {"id": response_id, "content": 完全なコンテンツ}
+            {"id": response_id, "content": complete content}
         """
         try:
             params = {
@@ -171,5 +171,5 @@ class OpenAIResponsesClient:
             }
 
         except Exception as e:
-            logger.error(f"OpenAI API ストリーミングエラー: {e}", exc_info=True)
+            logger.error(f"OpenAI API streaming error: {e}", exc_info=True)
             raise

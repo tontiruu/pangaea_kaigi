@@ -1,4 +1,4 @@
-"""背景知識を取得するためのサービス（Dedalus Labs MCP統合）"""
+"""Service for retrieving background knowledge (Dedalus Labs MCP integration)"""
 import logging
 import os
 from pathlib import Path
@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class ContextItem:
-    """取得したコンテキスト情報"""
+    """Retrieved context information"""
     source: str  # "notion", "slack", "atlassian"
     title: str
     content: str
@@ -21,11 +21,11 @@ class ContextItem:
 
 
 class ContextRetriever:
-    """Dedalus Labsを使用して複数のMCPサービスから背景知識を取得"""
+    """Retrieve background knowledge from multiple MCP services using Dedalus Labs"""
 
     def __init__(self, use_mock: bool = True):
         self.enabled = settings.enable_context_retrieval
-        self.use_mock = use_mock  # モックデータ使用フラグ
+        self.use_mock = use_mock  # Mock data usage flag
         self.dedalus_client: Optional[AsyncDedalus] = None
 
         if self.enabled and settings.dedalus_api_key and not use_mock:
@@ -41,16 +41,16 @@ class ContextRetriever:
 
     async def retrieve_context(self, topic: str, keywords: List[str]) -> List[ContextItem]:
         """
-        議論トピックとキーワードに基づいて背景知識を取得
+        Retrieve background knowledge based on discussion topic and keywords
 
         Args:
-            topic: 議論のトピック
-            keywords: トピックから抽出されたキーワード
+            topic: Discussion topic
+            keywords: Keywords extracted from topic
 
         Returns:
-            取得したコンテキスト情報のリスト
+            List of retrieved context information
         """
-        # モックデータを使用する場合
+        # Use mock data
         if self.use_mock:
             return await self._retrieve_from_mock()
 
@@ -60,17 +60,17 @@ class ContextRetriever:
 
         contexts = []
 
-        # Notionから情報を取得
+        # Retrieve information from Notion
         if settings.notion_token:
             notion_contexts = await self._retrieve_from_notion(topic, keywords)
             contexts.extend(notion_contexts)
 
-        # Slackから情報を取得
+        # Retrieve information from Slack
         if settings.slack_bot_token:
             slack_contexts = await self._retrieve_from_slack(topic, keywords)
             contexts.extend(slack_contexts)
 
-        # Atlassianから情報を取得
+        # Retrieve information from Atlassian
         if settings.atlassian_api_token:
             atlassian_contexts = await self._retrieve_from_atlassian(topic, keywords)
             contexts.extend(atlassian_contexts)
@@ -79,7 +79,7 @@ class ContextRetriever:
         return contexts
 
     async def _retrieve_from_mock(self) -> List[ContextItem]:
-        """モックデータファイルから背景知識を読み込み"""
+        """Load background knowledge from mock data file"""
         try:
             mock_file = Path(__file__).parent.parent / "mock_data.txt"
 
@@ -90,7 +90,7 @@ class ContextRetriever:
             with open(mock_file, "r", encoding="utf-8") as f:
                 content = f.read()
 
-            # ファイルをセクションごとに分割
+            # Split file by sections
             contexts = []
             current_section = None
             current_title = None
@@ -101,10 +101,10 @@ class ContextRetriever:
                 line = line.strip()
 
                 if line.startswith("## "):
-                    # 新しい大セクション
+                    # New major section
                     current_section = line[3:].strip()
                 elif line.startswith("### "):
-                    # 新しい項目 - 前の項目を保存
+                    # New item - save previous item
                     if current_title and current_content:
                         source = "notion" if "Notion" in current_section else \
                                 "slack" if "Slack" in current_section else \
@@ -118,7 +118,7 @@ class ContextRetriever:
                             metadata={"section": current_section}
                         ))
 
-                    # 新しい項目を開始
+                    # Start new item
                     current_title = line[4:].strip()
                     current_content = []
                     current_url = None
@@ -127,7 +127,7 @@ class ContextRetriever:
                 elif line and not line.startswith("#"):
                     current_content.append(line)
 
-            # 最後の項目を保存
+            # Save last item
             if current_title and current_content:
                 source = "notion" if "Notion" in current_section else \
                         "slack" if "Slack" in current_section else \
@@ -152,17 +152,17 @@ class ContextRetriever:
         self, topic: str, keywords: List[str]
     ) -> List[ContextItem]:
         """
-        Notionから関連情報を取得
+        Retrieve related information from Notion
 
-        【Dedalus Labs使用方法の例】
-        この関数はDedalus Labsの実際の使用方法を示しています。
+        [Example of using Dedalus Labs]
+        This function demonstrates the actual usage of Dedalus Labs.
         """
         try:
-            # Dedalus Labs経由でNotionのMCPサーバーを呼び出し
+            # Call Notion MCP server via Dedalus Labs
             search_query = f"{topic} {' '.join(keywords)}"
 
-            # 【ステップ1】MCPツールを使用したプロンプトを構築
-            # Dedalusは自然言語でMCPツールの呼び出しを指示できます
+            # [Step 1] Build prompt using MCP tools
+            # Dedalus allows natural language instructions to call MCP tools
             prompt = f"""
             Use the Notion MCP server to search for pages and databases related to: {search_query}
 
@@ -174,11 +174,11 @@ class ContextRetriever:
             Return the results in a structured format with title, content snippet, and URL.
             """
 
-            # 【ステップ2】Dedalus APIを呼び出し
-            # AsyncDedalus.chat.completions.createメソッドを使用
-            # OpenAI互換のインターフェースでMCPツールを統合
+            # [Step 2] Call Dedalus API
+            # Use AsyncDedalus.chat.completions.create method
+            # Integrate MCP tools with OpenAI-compatible interface
             response = await self.dedalus_client.chat.completions.create(
-                model="openai/gpt-4o",  # 使用するLLMモデル
+                model="openai/gpt-4o",  # LLM model to use
                 messages=[
                     {
                         "role": "system",
@@ -186,18 +186,18 @@ class ContextRetriever:
                     },
                     {"role": "user", "content": prompt}
                 ],
-                # 【重要】MCPツールの指定
-                # ここでNotion MCPサーバーを指定し、認証情報を渡す
+                # [Important] Specify MCP tools
+                # Specify Notion MCP server here and pass authentication info
                 tools=[{
                     "type": "mcp",
-                    "server": "notion",  # MCPサーバー名（要確認）
+                    "server": "notion",  # MCP server name (needs verification)
                     "config": {
-                        "token": settings.notion_token  # Notion統合トークン
+                        "token": settings.notion_token  # Notion integration token
                     }
                 }]
             )
 
-            # 【ステップ3】レスポンスをパースしてContextItemに変換
+            # [Step 3] Parse response and convert to ContextItem
             contexts = self._parse_notion_response(response)
             logger.info(f"Retrieved {len(contexts)} items from Notion")
             return contexts
@@ -210,9 +210,9 @@ class ContextRetriever:
         self, topic: str, keywords: List[str]
     ) -> List[ContextItem]:
         """
-        Slackから関連情報を取得
+        Retrieve related information from Slack
 
-        【Dedalus Labs + Slack MCP統合の例】
+        [Example of Dedalus Labs + Slack MCP integration]
         """
         try:
             search_query = f"{topic} {' '.join(keywords)}"
@@ -228,8 +228,8 @@ class ContextRetriever:
             Return the results with message content, channel name, author, and timestamp.
             """
 
-            # Slack MCPサーバーを使用する例
-            # bot_tokenとteam_idを設定に渡す
+            # Example of using Slack MCP server
+            # Pass bot_token and team_id in config
             response = await self.dedalus_client.chat.completions.create(
                 model="openai/gpt-4o",
                 messages=[
@@ -241,7 +241,7 @@ class ContextRetriever:
                 ],
                 tools=[{
                     "type": "mcp",
-                    "server": "slack",  # Slack MCPサーバー名（要確認）
+                    "server": "slack",  # Slack MCP server name (needs verification)
                     "config": {
                         "bot_token": settings.slack_bot_token,
                         "team_id": settings.slack_team_id
@@ -260,7 +260,7 @@ class ContextRetriever:
     async def _retrieve_from_atlassian(
         self, topic: str, keywords: List[str]
     ) -> List[ContextItem]:
-        """Atlassian (Jira/Confluence) から関連情報を取得"""
+        """Retrieve related information from Atlassian (Jira/Confluence)"""
         try:
             search_query = f"{topic} {' '.join(keywords)}"
 
@@ -304,14 +304,14 @@ class ContextRetriever:
             return []
 
     def _parse_notion_response(self, response) -> List[ContextItem]:
-        """Notionのレスポンスをパース"""
+        """Parse Notion response"""
         contexts = []
         try:
-            # レスポンスから構造化されたデータを抽出
+            # Extract structured data from response
             content = response.choices[0].message.content
 
-            # 簡易的なパース（実際のレスポンス形式に応じて調整が必要）
-            # TODO: 実際のDedalusレスポンス形式に合わせて実装
+            # Simple parsing (needs adjustment based on actual response format)
+            # TODO: Implement according to actual Dedalus response format
             contexts.append(ContextItem(
                 source="notion",
                 title="Notion Search Results",
@@ -325,12 +325,12 @@ class ContextRetriever:
         return contexts
 
     def _parse_slack_response(self, response) -> List[ContextItem]:
-        """Slackのレスポンスをパース"""
+        """Parse Slack response"""
         contexts = []
         try:
             content = response.choices[0].message.content
 
-            # TODO: 実際のDedalusレスポンス形式に合わせて実装
+            # TODO: Implement according to actual Dedalus response format
             contexts.append(ContextItem(
                 source="slack",
                 title="Slack Search Results",
@@ -344,12 +344,12 @@ class ContextRetriever:
         return contexts
 
     def _parse_atlassian_response(self, response) -> List[ContextItem]:
-        """Atlassianのレスポンスをパース"""
+        """Parse Atlassian response"""
         contexts = []
         try:
             content = response.choices[0].message.content
 
-            # TODO: 実際のDedalusレスポンス形式に合わせて実装
+            # TODO: Implement according to actual Dedalus response format
             contexts.append(ContextItem(
                 source="atlassian",
                 title="Atlassian Search Results",
@@ -364,15 +364,15 @@ class ContextRetriever:
 
     def format_contexts_for_prompt(self, contexts: List[ContextItem]) -> str:
         """
-        取得したコンテキストをプロンプトに埋め込むための文字列に整形
+        Format retrieved contexts into a string for embedding in prompts
 
         Returns:
-            整形されたコンテキスト文字列
+            Formatted context string
         """
         if not contexts:
             return ""
 
-        formatted = ["## 背景知識\n"]
+        formatted = ["## Background Knowledge\n"]
 
         for ctx in contexts:
             formatted.append(f"### [{ctx.source.upper()}] {ctx.title}")
