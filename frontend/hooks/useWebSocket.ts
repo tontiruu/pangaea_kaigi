@@ -142,10 +142,24 @@ export function useWebSocket(url: string) {
         break;
 
       case 'message':
-        setState(prev => ({
-          ...prev,
-          messages: [...prev.messages, message.data],
-        }));
+        setState(prev => {
+          // Check if message with same ID already exists
+          const existingIndex = prev.messages.findIndex(m => m.id === message.data.id);
+          if (existingIndex !== -1) {
+            // Update existing message
+            const updatedMessages = [...prev.messages];
+            updatedMessages[existingIndex] = message.data;
+            return {
+              ...prev,
+              messages: updatedMessages,
+            };
+          }
+          // Add new message
+          return {
+            ...prev,
+            messages: [...prev.messages, message.data],
+          };
+        });
         break;
 
       case 'voting_result':
