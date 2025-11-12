@@ -2,6 +2,15 @@
  * メッセージ吹き出しコンポーネント
  */
 import { Message, MessageType } from '@/types/message';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faCog,
+  faLightbulb,
+  faComments,
+  faComment,
+  faStar,
+  faFileAlt,
+} from '@fortawesome/free-solid-svg-icons';
 
 interface MessageBubbleProps {
   message: Message;
@@ -11,17 +20,53 @@ export function MessageBubble({ message }: MessageBubbleProps) {
   const getMessageStyle = () => {
     switch (message.message_type) {
       case MessageType.SYSTEM:
-        return 'bg-gray-100 text-gray-800 border-l-4 border-gray-400';
+        return {
+          container: 'bg-gradient-to-br from-neutral-50 to-neutral-100 shadow-md',
+          borderColor: 'var(--neutral-400)',
+          badge: 'bg-neutral-500',
+          avatarGradient: 'linear-gradient(to bottom right, var(--neutral-400), var(--neutral-500))',
+          icon: faCog
+        };
       case MessageType.OPINION:
-        return 'bg-blue-50 text-blue-900 border-l-4 border-blue-500';
+        return {
+          container: 'bg-gradient-to-br from-teal-50 to-emerald-100 shadow-md',
+          borderColor: 'var(--primary)',
+          badge: 'bg-gradient-to-r from-teal-500 to-emerald-500',
+          avatarGradient: 'linear-gradient(to bottom right, var(--primary-light), var(--primary))',
+          icon: faLightbulb
+        };
       case MessageType.PERSUASION:
-        return 'bg-green-50 text-green-900 border-l-4 border-green-500';
+        return {
+          container: 'bg-gradient-to-br from-emerald-50 to-teal-100 shadow-md',
+          borderColor: 'var(--primary-dark)',
+          badge: 'bg-gradient-to-r from-emerald-500 to-teal-600',
+          avatarGradient: 'linear-gradient(to bottom right, var(--primary), var(--primary-dark))',
+          icon: faComments
+        };
       case MessageType.RESPONSE:
-        return 'bg-purple-50 text-purple-900 border-l-4 border-purple-500';
+        return {
+          container: 'bg-gradient-to-br from-cyan-50 to-teal-100 shadow-md',
+          borderColor: 'var(--primary-light)',
+          badge: 'bg-gradient-to-r from-cyan-500 to-teal-500',
+          avatarGradient: 'linear-gradient(to bottom right, var(--primary-lighter), var(--primary-light))',
+          icon: faComment
+        };
       case MessageType.CONCLUSION:
-        return 'bg-yellow-50 text-yellow-900 border-l-4 border-yellow-500';
+        return {
+          container: 'bg-gradient-to-br from-emerald-50 to-green-100 shadow-md',
+          borderColor: 'var(--primary)',
+          badge: 'bg-gradient-to-r from-emerald-500 to-green-600',
+          avatarGradient: 'linear-gradient(to bottom right, var(--primary), var(--primary-darker))',
+          icon: faStar
+        };
       default:
-        return 'bg-white text-gray-800 border-l-4 border-gray-300';
+        return {
+          container: 'bg-white/70 backdrop-blur-sm shadow-md',
+          borderColor: 'var(--neutral-300)',
+          badge: 'bg-neutral-400',
+          avatarGradient: 'linear-gradient(to bottom right, var(--neutral-400), var(--neutral-500))',
+          icon: faFileAlt
+        };
     }
   };
 
@@ -42,27 +87,39 @@ export function MessageBubble({ message }: MessageBubbleProps) {
     }
   };
 
+  const style = getMessageStyle();
+
   return (
-    <div className={`p-4 rounded-lg mb-3 ${getMessageStyle()} shadow-sm`}>
-      <div className="flex items-start gap-3">
+    <div
+      className={`p-5 rounded-2xl mb-4 ${style.container} backdrop-blur-sm border border-white/30 transition-all duration-500 hover:shadow-2xl hover:scale-[1.02] hover:-translate-y-1 animate-card-lift`}
+      style={{
+        borderLeft: `4px solid ${style.borderColor}`
+      }}
+    >
+      <div className="flex items-start gap-4">
         <div className="flex-shrink-0">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-bold">
-            {message.agent_name.charAt(0)}
+          <div
+            className="w-11 h-11 rounded-xl flex items-center justify-center text-white font-bold shadow-lg ring-2 ring-white/50 transition-all duration-300 hover:scale-110 hover:rotate-6"
+            style={{
+              background: style.avatarGradient
+            }}
+          >
+            <FontAwesomeIcon icon={style.icon} className="text-lg" />
           </div>
         </div>
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <span className="font-semibold text-sm">{message.agent_name}</span>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="font-bold text-sm text-gray-800">{message.agent_name}</span>
             {message.message_type !== MessageType.SYSTEM && (
-              <span className="text-xs px-2 py-0.5 bg-white bg-opacity-50 rounded">
+              <span className={`text-xs px-2.5 py-1 text-white rounded-full font-medium shadow-sm ${style.badge}`}>
                 {getMessageTypeLabel()}
               </span>
             )}
-            <span className="text-xs text-gray-500 ml-auto">
+            <span className="text-xs text-gray-500 ml-auto font-medium">
               {new Date(message.timestamp).toLocaleTimeString('ja-JP')}
             </span>
           </div>
-          <div className="text-sm whitespace-pre-wrap break-words">
+          <div className="text-sm text-gray-800 whitespace-pre-wrap break-words leading-relaxed">
             {message.content}
           </div>
         </div>

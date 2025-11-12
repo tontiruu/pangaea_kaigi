@@ -1,0 +1,66 @@
+# モック背景知識データ
+# このファイルは実際のNotion/Slack/Atlassian連携が実装されるまでのモックデータです
+
+## Notion検索結果
+
+### [Notion] プロダクト開発ロードマップ
+過去3ヶ月のスプリントで、ユーザー認証機能とダッシュボード機能を実装しました。
+次の四半期では、通知機能とレポート機能の実装が予定されています。
+技術スタックはReact + FastAPI + PostgreSQLを使用しています。
+URL: https://notion.so/product-roadmap-example
+
+### [Notion] API設計ドキュメント
+RESTful APIの設計原則に従い、リソース指向のエンドポイント設計を採用。
+認証はJWT方式で、レート制限は1000リクエスト/時間に設定。
+バージョニングはURLパスに含める方式（/api/v1/）を採用。
+URL: https://notion.so/api-design-doc
+
+### [Notion] 技術的な課題と解決策
+パフォーマンス問題: データベースクエリの最適化が必要。N+1問題が発生している箇所を特定し、eager loadingで対応。
+セキュリティ: CORS設定の見直しと、入力値のバリデーション強化を実施。
+URL: https://notion.so/tech-issues
+
+## Slack検索結果
+
+### [Slack] #engineering チャンネル (2025-01-10)
+@tanaka: 新機能のデプロイについて、ステージング環境でのテストが完了しました。
+@suzuki: パフォーマンステストの結果、レスポンスタイムが平均200ms以内に収まっています。
+@yamada: セキュリティレビューも完了。XSS対策とCSRF対策が適切に実装されています。
+
+### [Slack] #product チャンネル (2025-01-08)
+@product_manager: ユーザーフィードバックを分析した結果、検索機能の改善要望が最も多い。
+@designer: UIモックアップを作成しました。インクリメンタルサーチとフィルター機能を追加。
+@cto: 技術的には実装可能。次スプリントで優先度高で対応します。
+
+### [Slack] #general チャンネル (2025-01-05)
+@ceo: Q1の目標は新規ユーザー獲得1000人とアクティブ率30%維持。
+@marketing: マーケティングキャンペーンを来週から開始予定。
+
+## Atlassian (Jira) 検索結果
+
+### [Jira] PROJ-123: ユーザー検索機能の実装
+ステータス: 進行中
+優先度: 高
+担当者: 田中太郎
+説明: ユーザーが他のユーザーを名前やメールアドレスで検索できる機能を実装する。
+ElasticsearchまたはPostgreSQLの全文検索を使用。
+URL: https://jira.example.com/PROJ-123
+
+### [Jira] PROJ-456: パフォーマンス改善
+ステータス: レビュー待ち
+優先度: 中
+担当者: 鈴木花子
+説明: APIのレスポンスタイムを50%改善する。データベースインデックスの追加とクエリ最適化を実施。
+URL: https://jira.example.com/PROJ-456
+
+## Atlassian (Confluence) 検索結果
+
+### [Confluence] アーキテクチャ概要
+マイクロサービスアーキテクチャを採用。各サービスは独立してデプロイ可能。
+サービス間通信はREST APIとメッセージキュー（RabbitMQ）を使用。
+URL: https://confluence.example.com/architecture
+
+### [Confluence] セキュリティポリシー
+個人情報の取り扱いはGDPRに準拠。データは暗号化して保存。
+アクセスログは90日間保持し、定期的な監査を実施。
+URL: https://confluence.example.com/security-policy

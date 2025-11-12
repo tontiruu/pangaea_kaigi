@@ -1,7 +1,7 @@
 """ファシリテーターAgent"""
 import json
 import uuid
-from typing import List, Optional
+from typing import List, Optional, Callable, Awaitable
 from models.discussion import AgendaItem
 from models.agent import Agent, AgentRole
 from services.openai_client import OpenAIResponsesClient
@@ -35,12 +35,38 @@ class Facilitator:
 
     async def create_agenda(self, topic: str) -> List[AgendaItem]:
         """議題からアジェンダを作成"""
+        return await self.create_agenda_with_context(topic, "")
+
+    async def create_agenda_with_context(
+        self,
+        topic: str,
+        context: str,
+        on_stream: Optional[Callable[[str], Awaitable[None]]] = None,
+    ) -> List[AgendaItem]:
+        """議題と背景知識からアジェンダを作成（ストリーミング対応）"""
         prompt = FACILITATOR_CREATE_AGENDA.format(topic=topic)
 
-        response = await self.openai_client.create_with_retry(
-            input_text=prompt,
-            previous_response_id=self.response_id,
-        )
+        # 背景知識がある場合はプロンプトに追加
+        if context:
+            prompt = f"{context}\n\n{prompt}\n\n上記の背景知識を考慮してアジェンダを作成してください。"
+
+        # ストリーミングコールバック
+        async def chunk_callback(chunk: str):
+            if on_stream:
+                await on_stream(chunk)
+
+        # ストリーミング対応の場合
+        if on_stream:
+            response = await self.openai_client.create_with_streaming(
+                input_text=prompt,
+                previous_response_id=self.response_id,
+                on_chunk=chunk_callback,
+            )
+        else:
+            response = await self.openai_client.create_with_retry(
+                input_text=prompt,
+                previous_response_id=self.response_id,
+            )
 
         self.response_id = response["id"]
 

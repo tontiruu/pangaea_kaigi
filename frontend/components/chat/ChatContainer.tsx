@@ -23,15 +23,26 @@ export function ChatContainer({ messages }: ChatContainerProps) {
   }, [messages]);
 
   return (
-    <div className="flex-1 overflow-y-auto p-6 bg-gray-50">
+    <div className="flex-1 overflow-y-auto p-8">
       {messages.length === 0 ? (
-        <div className="flex items-center justify-center h-full text-gray-400">
-          <p>議論が始まるまでお待ちください...</p>
+        <div className="flex flex-col items-center justify-center h-full text-gray-400">
+          <div className="w-20 h-20 rounded-2xl flex items-center justify-center mb-6 shadow-lg animate-float-up" style={{ background: 'linear-gradient(to bottom right, rgba(0, 212, 168, 0.2), rgba(51, 224, 186, 0.2))' }}>
+            <div className="w-4 h-4 rounded-full animate-pulse" style={{ background: 'linear-gradient(to right, var(--primary), var(--primary-light))' }}></div>
+          </div>
+          <p className="text-lg font-medium text-gray-500 mb-2 animate-fade-in" style={{ animationDelay: '0.2s' }}>議論の準備中</p>
+          <p className="text-sm text-gray-400 animate-fade-in" style={{ animationDelay: '0.4s' }}>まもなく開始されます...</p>
         </div>
       ) : (
         <div className="max-w-4xl mx-auto">
-          {messages.map((message) => (
-            <MessageBubble key={message.id} message={message} />
+          {messages.map((message, index) => (
+            <div
+              key={message.id}
+              style={{
+                animationDelay: `${Math.min(index * 50, 1000)}ms`
+              }}
+            >
+              <MessageBubble message={message} />
+            </div>
           ))}
           <div ref={messagesEndRef} />
         </div>

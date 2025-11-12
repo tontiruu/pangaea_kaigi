@@ -2,7 +2,7 @@
 
 import asyncio
 from openai import AsyncOpenAI
-from typing import Optional
+from typing import Optional, Callable, Awaitable
 import logging
 
 logger = logging.getLogger(__name__)
@@ -113,3 +113,63 @@ class OpenAIResponsesClient:
                     f"リトライ {attempt + 1}/{max_retries}。{delay}秒後に再試行: {e}"
                 )
                 await asyncio.sleep(delay)
+
+    async def create_with_streaming(
+        self,
+        input_text: str,
+        previous_response_id: Optional[str] = None,
+        store: bool = True,
+        on_chunk: Optional[Callable[[str], Awaitable[None]]] = None,
+    ) -> dict:
+        """
+        ストリーミングでレスポンスを生成
+
+        Args:
+            input_text: 入力プロンプト
+            previous_response_id: 前回のresponse_id
+            store: サーバー側に会話を保存するか
+            on_chunk: チャンクごとに呼ばれるコールバック関数
+
+        Returns:
+            {"id": response_id, "content": 完全なコンテンツ}
+        """
+        try:
+            params = {
+                "model": self.model,
+                "input": input_text,
+                "stream": True,
+            }
+
+            if previous_response_id:
+                params["previous_response_id"] = previous_response_id
+
+            if store:
+                params["store"] = True
+
+            response_stream = await self.client.responses.create(**params)
+
+            full_content = ""
+            response_id = None
+
+            async for chunk in response_stream:
+                if hasattr(chunk, "id") and chunk.id:
+                    response_id = chunk.id
+
+                if hasattr(chunk, "output_text") and chunk.output_text:
+                    chunk_text = chunk.output_text
+                    full_content = chunk_text
+
+                    if on_chunk:
+                        await on_chunk(chunk_text)
+
+            logger.info(f"OpenAI Streaming Response ID: {response_id}")
+            logger.info(f"Total content length: {len(full_content)}")
+
+            return {
+                "id": response_id,
+                "content": full_content,
+            }
+
+        except Exception as e:
+            logger.error(f"OpenAI API ストリーミングエラー: {e}", exc_info=True)
+            raise

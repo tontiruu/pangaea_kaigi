@@ -8,6 +8,7 @@ from models.agent import Agent
 from models.message import Message, Opinion, MessageType
 from services.facilitator import Facilitator
 from services.agent_manager import AgentManager
+from services.context_retriever import ContextRetriever
 from datetime import datetime
 import logging
 
@@ -22,12 +23,15 @@ class DiscussionEngine:
         facilitator: Facilitator,
         agent_manager: AgentManager,
         message_callback: Callable[[Dict], Awaitable[None]],
+        context_retriever: Optional[ContextRetriever] = None,
     ):
         self.facilitator = facilitator
         self.agent_manager = agent_manager
         self.message_callback = message_callback
+        self.context_retriever = context_retriever or ContextRetriever()
         self.session: Optional[DiscussionSession] = None
         self.agents: List[Agent] = []
+        self.background_context: str = ""
 
     async def start_discussion(self, topic: str) -> DiscussionSession:
         """議論を開始"""
@@ -45,6 +49,27 @@ class DiscussionEngine:
         # ファシリテーター初期化
         self.facilitator.initialize()
 
+        # 背景知識の取得
+        await self._send_message(
+            agent=self.facilitator.agent,
+            content="関連する背景知識を収集しています...",
+            message_type=MessageType.SYSTEM,
+        )
+
+        context_items = await self._retrieve_background_context(topic)
+        self.background_context = self.context_retriever.format_contexts_for_prompt(context_items)
+
+        if context_items:
+            await self._send_event("context_retrieved", {
+                "count": len(context_items),
+                "sources": list(set(ctx.source for ctx in context_items)),
+            })
+            await self._send_message(
+                agent=self.facilitator.agent,
+                content=f"{len(context_items)}件の関連情報を取得しました",
+                message_type=MessageType.SYSTEM,
+            )
+
         # アジェンダ作成
         self.session.phase = DiscussionPhase.AGENDA_CREATION
         await self._send_message(
@@ -53,7 +78,12 @@ class DiscussionEngine:
             message_type=MessageType.SYSTEM,
         )
 
-        agenda = await self.facilitator.create_agenda(topic)
+        # ストリーミングは一旦無効化（安定性優先）
+        agenda = await self.facilitator.create_agenda_with_context(
+            topic,
+            self.background_context,
+            on_stream=None,
+        )
         self.session.agenda = agenda
 
         await self._send_event("agenda_created", {
@@ -131,13 +161,14 @@ class DiscussionEngine:
             message_type=MessageType.SYSTEM,
         )
 
-        # 全Agent並列で意見生成
+        # 全Agent並列で意見生成（背景知識を渡す）
         tasks = []
         for agent in self.agents:
             task = self.agent_manager.generate_independent_opinion(
                 agent=agent,
                 agenda_title=agenda_item.title,
                 agenda_description=agenda_item.description,
+                background_context=self.background_context,
             )
             tasks.append(task)
 
@@ -186,16 +217,37 @@ class DiscussionEngine:
 
         votes = await asyncio.gather(*tasks)
 
-        # 投票結果を集計
+        # 投票結果を集計（誰がどの意見に投票したかを記録）
         vote_counter = Counter(votes)
+        vote_details = []  # 詳細な投票情報
+        for idx, voted_opinion_id in enumerate(votes):
+            voter = self.agents[idx]
+            vote_details.append({
+                "voter_id": voter.id,
+                "voter_name": voter.name,
+                "opinion_id": voted_opinion_id,
+            })
+
         for opinion in opinions:
             opinion.votes = vote_counter.get(opinion.id, 0)
 
         # 1票以上の意見のみ残す
         filtered_opinions = [op for op in opinions if op.votes > 0]
 
+        # 意見の詳細情報を含めて送信
         await self._send_event("voting_result", {
             "votes": {op.id: op.votes for op in opinions},
+            "vote_details": vote_details,
+            "opinions": [
+                {
+                    "id": op.id,
+                    "agent_id": op.agent_id,
+                    "agent_name": op.agent_name,
+                    "content": op.content,
+                    "votes": op.votes,
+                }
+                for op in opinions
+            ],
             "remaining_opinions": len(filtered_opinions),
         })
 
@@ -214,6 +266,9 @@ class DiscussionEngine:
         if len(opinions) == 1:
             return opinions[0].content
 
+        # 各Agentが支持している意見を記録
+        agent_opinions = {op.agent_id: op for op in opinions}
+
         # 少数派から順に説得
         max_rounds = 10
         for round_num in range(max_rounds):
@@ -231,14 +286,35 @@ class DiscussionEngine:
                 )
 
                 # 他のAgentが応答
+                counter_arguments = []
                 for agent in self.agents:
                     if agent.id != persuader.id:
-                        response_msg, _ = await self.agent_manager.respond_to_persuasion(
-                            agent, persuasion_msg
+                        # 各Agentが支持している意見と他の意見を取得
+                        your_opinion = agent_opinions.get(agent.id).content if agent.id in agent_opinions else ""
+                        other_opinions_list = [op.content for op in opinions if op.agent_id != agent.id]
+
+                        response_msg, _, is_agreement = await self.agent_manager.respond_to_persuasion(
+                            agent, persuasion_msg, your_opinion, other_opinions_list
                         )
                         await self._send_message(
                             agent=agent,
                             content=response_msg,
+                            message_type=MessageType.RESPONSE,
+                        )
+
+                        # 反論があった場合は記録
+                        if not is_agreement:
+                            counter_arguments.append((agent, response_msg))
+
+                # 反論があった場合、元の意見の発言者が再応答
+                if counter_arguments:
+                    for counter_agent, counter_msg in counter_arguments:
+                        rebuttal_msg, _, maintains = await self.agent_manager.respond_to_counter_argument(
+                            persuader, counter_msg, opinion.content
+                        )
+                        await self._send_message(
+                            agent=persuader,
+                            content=rebuttal_msg,
                             message_type=MessageType.RESPONSE,
                         )
 
@@ -293,6 +369,27 @@ class DiscussionEngine:
             "type": event_type,
             "data": data,
         })
+
+    async def _retrieve_background_context(self, topic: str) -> list:
+        """議論トピックから背景知識を取得"""
+        try:
+            # トピックからキーワードを抽出（簡易版）
+            keywords = self._extract_keywords(topic)
+
+            # コンテキスト取得
+            context_items = await self.context_retriever.retrieve_context(topic, keywords)
+            return context_items
+
+        except Exception as e:
+            logger.error(f"Error retrieving background context: {e}")
+            return []
+
+    def _extract_keywords(self, topic: str) -> List[str]:
+        """トピックからキーワードを抽出（簡易版）"""
+        # TODO: より高度なキーワード抽出を実装
+        # 現在は単純にスペース区切りで分割
+        keywords = [word.strip() for word in topic.split() if len(word.strip()) > 2]
+        return keywords[:5]  # 最大5個まで
 
     def _generate_final_conclusion(self) -> str:
         """最終結論を生成"""

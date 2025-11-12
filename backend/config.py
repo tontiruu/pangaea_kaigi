@@ -21,6 +21,24 @@ class Settings(BaseSettings):
     # OpenAI Settings
     openai_api_key: str = ""
 
+    # Dedalus Labs Settings
+    dedalus_api_key: str = ""
+
+    # MCP Integration Settings
+    enable_context_retrieval: bool = True
+
+    # Notion MCP Settings (オプション)
+    notion_token: str = ""
+
+    # Slack MCP Settings (オプション)
+    slack_bot_token: str = ""
+    slack_team_id: str = ""
+
+    # Atlassian MCP Settings (オプション)
+    atlassian_email: str = ""
+    atlassian_api_token: str = ""
+    atlassian_domain: str = ""
+
     # Database (必要に応じて設定)
     database_url: str = ""
 

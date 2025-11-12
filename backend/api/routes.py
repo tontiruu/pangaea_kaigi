@@ -1,11 +1,13 @@
 """APIルート定義"""
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect, HTTPException
 from pydantic import BaseModel
+from typing import List
 from api.websocket import manager
 from services.openai_client import OpenAIResponsesClient
 from services.agent_manager import AgentManager
 from services.facilitator import Facilitator
 from services.discussion_engine import DiscussionEngine
+from services.context_retriever import ContextRetriever
 from config import settings
 import logging
 import asyncio
@@ -18,6 +20,12 @@ router = APIRouter()
 class StartDiscussionRequest(BaseModel):
     """議論開始リクエスト"""
     topic: str
+
+
+class ContextRetrievalRequest(BaseModel):
+    """背景知識取得リクエスト"""
+    topic: str
+    keywords: List[str] = []
 
 
 @router.post("/api/discussions/start")
@@ -102,6 +110,77 @@ async def websocket_discussion_endpoint(websocket: WebSocket):
             await websocket.close()
         except:
             pass
+
+
+@router.post("/api/context/retrieve")
+async def retrieve_context_endpoint(request: ContextRetrievalRequest):
+    """
+    背景知識取得エンドポイント（テスト用）
+
+    議論トピックに関連する背景知識をNotion/Slack/Atlassianから取得します。
+    現在はモックデータを返します。
+    """
+    try:
+        # ContextRetrieverを初期化（モックモード）
+        retriever = ContextRetriever(use_mock=True)
+
+        # キーワードが指定されていない場合は自動抽出
+        keywords = request.keywords
+        if not keywords:
+            # 簡易的なキーワード抽出
+            keywords = [word.strip() for word in request.topic.split() if len(word.strip()) > 2][:5]
+
+        # 背景知識を取得
+        context_items = await retriever.retrieve_context(request.topic, keywords)
+
+        # レスポンスを整形
+        return {
+            "topic": request.topic,
+            "keywords": keywords,
+            "count": len(context_items),
+            "contexts": [
+                {
+                    "source": item.source,
+                    "title": item.title,
+                    "content": item.content,
+                    "url": item.url,
+                    "metadata": item.metadata,
+                }
+                for item in context_items
+            ]
+        }
+
+    except Exception as e:
+        logger.error(f"背景知識取得エラー: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/api/context/sources")
+async def get_context_sources():
+    """
+    利用可能な背景知識ソースの情報を取得
+    """
+    return {
+        "sources": [
+            {
+                "name": "notion",
+                "enabled": bool(settings.notion_token),
+                "description": "Notionから関連ドキュメントを検索"
+            },
+            {
+                "name": "slack",
+                "enabled": bool(settings.slack_bot_token),
+                "description": "Slackから過去の議論を検索"
+            },
+            {
+                "name": "atlassian",
+                "enabled": bool(settings.atlassian_api_token),
+                "description": "JiraとConfluenceから情報を検索"
+            }
+        ],
+        "dedalus_configured": bool(settings.dedalus_api_key),
+        "context_retrieval_enabled": settings.enable_context_retrieval
+    }
 
 
 @router.get("/api/health")

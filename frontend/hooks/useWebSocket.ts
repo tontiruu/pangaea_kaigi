@@ -11,6 +11,27 @@ interface WebSocketMessage {
   data: any;
 }
 
+interface VoteDetail {
+  voter_id: string;
+  voter_name: string;
+  opinion_id: string;
+}
+
+interface OpinionDetail {
+  id: string;
+  agent_id: string;
+  agent_name: string;
+  content: string;
+  votes: number;
+}
+
+interface VotingResult {
+  votes: Record<string, number>;
+  vote_details: VoteDetail[];
+  opinions: OpinionDetail[];
+  remaining_opinions: number;
+}
+
 export interface DiscussionState {
   connected: boolean;
   discussionId: string | null;
@@ -20,8 +41,9 @@ export interface DiscussionState {
   messages: Message[];
   currentPhase: string | null;
   currentAgendaIndex: number;
-  votingResult: Record<string, number> | null;
+  votingResult: VotingResult | null;
   finalConclusion: string | null;
+  agendaStreaming: string | null;
   error: string | null;
 }
 
@@ -37,6 +59,7 @@ export function useWebSocket(url: string) {
     currentAgendaIndex: 0,
     votingResult: null,
     finalConclusion: null,
+    agendaStreaming: null,
     error: null,
   });
 
@@ -88,10 +111,18 @@ export function useWebSocket(url: string) {
         }));
         break;
 
+      case 'agenda_streaming':
+        setState(prev => ({
+          ...prev,
+          agendaStreaming: message.data.content,
+        }));
+        break;
+
       case 'agenda_created':
         setState(prev => ({
           ...prev,
           agenda: message.data.agenda,
+          agendaStreaming: null, // ストリーミング完了
         }));
         break;
 
@@ -120,7 +151,7 @@ export function useWebSocket(url: string) {
       case 'voting_result':
         setState(prev => ({
           ...prev,
-          votingResult: message.data.votes,
+          votingResult: message.data,
         }));
         break;
 
