@@ -1,70 +1,70 @@
 # Technical Architecture
 
-## バックエンドアーキテクチャ
+## Backend Architecture
 
-### ディレクトリ構造
+### Directory Structure
 ```
 backend/
-├── main.py                      # FastAPI アプリケーションのエントリーポイント
-├── config.py                    # 設定管理
-├── requirements.txt             # 依存関係
-├── api/                         # APIエンドポイント
+├── main.py                      # FastAPI application entry point
+├── config.py                    # Configuration management
+├── requirements.txt             # Dependencies
+├── api/                         # API endpoints
 │   ├── __init__.py
-│   ├── routes.py                # ルート定義
-│   └── websocket.py             # WebSocket接続管理
-├── models/                      # データモデル
+│   ├── routes.py                # Route definitions
+│   └── websocket.py             # WebSocket connection management
+├── models/                      # Data models
 │   ├── __init__.py
-│   ├── agent.py                 # Agent関連のモデル
-│   ├── message.py               # メッセージモデル
-│   └── discussion.py            # 議論セッションモデル
-├── services/                    # ビジネスロジック
+│   ├── agent.py                 # Agent-related models
+│   ├── message.py               # Message model
+│   └── discussion.py            # Discussion session model
+├── services/                    # Business logic
 │   ├── __init__.py
-│   ├── openai_client.py         # OpenAI Responses API クライアント
-│   ├── facilitator.py           # ファシリテーターAgent
-│   ├── agent_manager.py         # Agent生成・管理
-│   └── discussion_engine.py     # 議論フロー制御
-└── utils/                       # ユーティリティ
+│   ├── openai_client.py         # OpenAI Responses API client
+│   ├── facilitator.py           # Facilitator Agent
+│   ├── agent_manager.py         # Agent generation and management
+│   └── discussion_engine.py     # Discussion flow control
+└── utils/                       # Utilities
     ├── __init__.py
-    └── prompts.py               # プロンプトテンプレート
+    └── prompts.py               # Prompt templates
 ```
 
-## フロントエンドアーキテクチャ
+## Frontend Architecture
 
-### ディレクトリ構造
+### Directory Structure
 ```
 frontend/
 ├── app/
-│   ├── page.tsx                 # ホームページ（議題入力）
+│   ├── page.tsx                 # Home page (topic input)
 │   ├── layout.tsx
 │   ├── discussion/
 │   │   └── [id]/
-│   │       └── page.tsx         # 議論画面
+│   │       └── page.tsx         # Discussion screen
 │   └── api/
 │       └── discussion/
-│           └── route.ts         # API routes（必要に応じて）
+│           └── route.ts         # API routes (as needed)
 ├── components/
 │   ├── chat/
-│   │   ├── ChatContainer.tsx    # チャットコンテナ
-│   │   ├── MessageBubble.tsx    # メッセージ吹き出し
-│   │   ├── AgentAvatar.tsx      # Agent アバター
-│   │   └── PhaseIndicator.tsx   # フェーズ表示
+│   │   ├── ChatContainer.tsx    # Chat container
+│   │   ├── MessageBubble.tsx    # Message bubble
+│   │   ├── AgentAvatar.tsx      # Agent avatar
+│   │   └── PhaseIndicator.tsx   # Phase indicator
 │   ├── input/
-│   │   └── TopicInput.tsx       # 議題入力フォーム
-│   └── ui/                      # 汎用UIコンポーネント
+│   │   └── TopicInput.tsx       # Topic input form
+│   └── ui/                      # General UI components
 ├── hooks/
-│   ├── useWebSocket.ts          # WebSocket管理フック
-│   └── useDiscussion.ts         # 議論状態管理フック
+│   ├── useWebSocket.ts          # WebSocket management hook
+│   └── useDiscussion.ts         # Discussion state management hook
 ├── types/
-│   ├── agent.ts                 # Agent型定義
-│   ├── message.ts               # メッセージ型定義
-│   └── discussion.ts            # 議論型定義
+│   ├── agent.ts                 # Agent type definitions
+│   ├── message.ts               # Message type definitions
+│   └── discussion.ts            # Discussion type definitions
 └── lib/
-    └── websocket.ts             # WebSocketクライアント
+    └── websocket.ts             # WebSocket client
 ```
 
-## データフロー
+## Data Flow
 
-### 1. 議題入力フロー
+### 1. Topic Input Flow
 ```
 User Input (Frontend)
   ↓
@@ -81,7 +81,7 @@ Frontend: Display agenda & agents
 Discussion Engine starts
 ```
 
-### 2. 議論フロー
+### 2. Discussion Flow
 ```
 Discussion Engine
   ↓
@@ -109,7 +109,7 @@ Consensus reached
 Move to next agenda
 ```
 
-## コアクラス設計
+## Core Class Design
 
 ### Agent Class
 ```python
@@ -149,12 +149,12 @@ class DiscussionEngine:
     async def check_consensus() -> bool
 ```
 
-## WebSocketイベント設計
+## WebSocket Event Design
 
-### Server → Client イベント
+### Server → Client Events
 
 ```typescript
-// 議論開始
+// Discussion started
 {
   type: 'discussion_started',
   data: {
@@ -163,7 +163,7 @@ class DiscussionEngine:
   }
 }
 
-// アジェンダ作成完了
+// Agenda creation completed
 {
   type: 'agenda_created',
   data: {
@@ -171,7 +171,7 @@ class DiscussionEngine:
   }
 }
 
-// Agent生成完了
+// Agent generation completed
 {
   type: 'agents_created',
   data: {
@@ -179,7 +179,7 @@ class DiscussionEngine:
   }
 }
 
-// フェーズ変更
+// Phase changed
 {
   type: 'phase_changed',
   data: {
@@ -188,7 +188,7 @@ class DiscussionEngine:
   }
 }
 
-// メッセージ送信
+// Message sent
 {
   type: 'message',
   data: {
@@ -199,7 +199,7 @@ class DiscussionEngine:
   }
 }
 
-// 投票結果
+// Voting result
 {
   type: 'voting_result',
   data: {
@@ -207,7 +207,7 @@ class DiscussionEngine:
   }
 }
 
-// アジェンダ完了
+// Agenda completed
 {
   type: 'agenda_completed',
   data: {
@@ -216,7 +216,7 @@ class DiscussionEngine:
   }
 }
 
-// 議論完了
+// Discussion completed
 {
   type: 'discussion_completed',
   data: {
@@ -224,7 +224,7 @@ class DiscussionEngine:
   }
 }
 
-// エラー
+// Error
 {
   type: 'error',
   data: {
@@ -233,10 +233,10 @@ class DiscussionEngine:
 }
 ```
 
-### Client → Server イベント
+### Client → Server Events
 
 ```typescript
-// 議論開始リクエスト
+// Discussion start request
 {
   type: 'start_discussion',
   data: {
@@ -245,14 +245,14 @@ class DiscussionEngine:
 }
 ```
 
-## OpenAI Responses API統合
+## OpenAI Responses API Integration
 
-### コンテキスト管理戦略
+### Context Management Strategy
 
-各Agentは独立した`response_id`チェーンを保持：
+Each Agent maintains an independent `response_id` chain:
 
 ```python
-# Agent初回発言
+# Agent's first statement
 response = await client.responses.create(
     model="gpt-4.1-mini",
     input=prompt,
@@ -260,59 +260,59 @@ response = await client.responses.create(
 )
 agent.response_id = response.id
 
-# Agent後続発言
+# Agent's subsequent statements
 response = await client.responses.create(
     model="gpt-4.1-mini",
-    input=f"他の意見: {others_opinions}\n\nあなたの反応: ",
+    input=f"Other opinions: {others_opinions}\n\nYour response: ",
     previous_response_id=agent.response_id,
     store=True
 )
-agent.response_id = response.id  # 更新
+agent.response_id = response.id  # Update
 ```
 
-### エラーハンドリング
-- Rate limit対応: Exponential backoff
-- API障害時: リトライロジック
-- タイムアウト: 適切な設定
+### Error Handling
+- Rate limit handling: Exponential backoff
+- API failures: Retry logic
+- Timeouts: Appropriate configuration
 
-## セキュリティ考慮事項
+## Security Considerations
 
-### API Key管理
-- 環境変数での管理（`.env`）
-- バックエンドでのみAPI Key使用
-- フロントエンドには絶対に露出させない
+### API Key Management
+- Managed via environment variables (`.env`)
+- API keys used only in backend
+- Never exposed to frontend
 
-### WebSocket認証
-- MVP段階: シンプルな接続
-- Phase 2: トークンベース認証
+### WebSocket Authentication
+- MVP stage: Simple connection
+- Phase 2: Token-based authentication
 
-## パフォーマンス最適化
+## Performance Optimization
 
-### 並列処理
-- Phase 1の独立意見出し: 全Agent並列実行
-- 投票: 全Agent並列実行
+### Parallel Processing
+- Phase 1 independent opinions: All agents execute in parallel
+- Voting: All agents execute in parallel
 
-### ストリーミング
-- OpenAI APIのストリーミングレスポンスを活用
-- リアルタイムでフロントエンドに送信
+### Streaming
+- Leverage OpenAI API streaming responses
+- Real-time transmission to frontend
 
-## 開発の進め方
+## Development Approach
 
-### Phase 1: コア機能実装
-1. OpenAI Responses API クライアント
-2. Agent基本クラス
-3. Facilitator基本機能
-4. シンプルな議論フロー
+### Phase 1: Core Feature Implementation
+1. OpenAI Responses API client
+2. Basic Agent class
+3. Basic Facilitator functionality
+4. Simple discussion flow
 
-### Phase 2: WebSocket統合
-5. WebSocket接続管理
-6. リアルタイム通信
+### Phase 2: WebSocket Integration
+5. WebSocket connection management
+6. Real-time communication
 
-### Phase 3: フロントエンド
-7. チャットUI
-8. WebSocket接続
-9. 状態管理
+### Phase 3: Frontend
+7. Chat UI
+8. WebSocket connection
+9. State management
 
-### Phase 4: 統合テスト
-10. エンドツーエンドテスト
-11. デバッグ・最適化
+### Phase 4: Integration Testing
+10. End-to-end testing
+11. Debugging and optimization

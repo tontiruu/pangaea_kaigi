@@ -1,308 +1,308 @@
-# Pangaea Kaigi - AI会議システム
+# Pangaea Kaigi - AI Meeting System
 
-## プロダクトビジョン
+## Product Vision
 
-複数のAIエージェントによる高速で緻密な議論を通じて、企業の意思決定者が論理的で多角的な意思決定を行えるよう支援するシステム。
+A system that supports corporate decision-makers in making logical and multifaceted decisions through fast and rigorous discussions powered by multiple AI agents.
 
-## 解決する課題
+## Problem Statement
 
-### ターゲットユーザー
-- 経営戦略や社内の重要な決め事を検討している企業の意思決定者
-- 一人で悩み、「これで決めていいのか？」と不安を感じている人
-- 本当に緻密に考えられているのか確信が持てない人
+### Target Users
+- Corporate decision-makers considering business strategies or important internal decisions
+- Individuals struggling alone, feeling uncertain about whether their decisions are correct
+- People who lack confidence that their thinking is truly thorough
 
-### 提供する価値
+### Value Proposition
 
-1. **高速で緻密な多角的議論**
-   - 複数のAIエージェントが異なる観点から意見を出し合う
-   - 短時間で質の高い議論が可能
+1. **Fast and Rigorous Multi-Perspective Discussion**
+   - Multiple AI agents contribute opinions from different viewpoints
+   - High-quality discussions in a short time
 
-2. **論理的な意思決定プロセス**
-   - 感情や権威に流されない、純粋に論理的な議論
-   - すべての意見が公平に評価される
+2. **Logical Decision-Making Process**
+   - Pure logical discussion not influenced by emotions or authority
+   - All opinions are evaluated fairly
 
-3. **意思決定の記録と継承**
-   - どのような根拠で意思決定を行ったかがデータとして保存される
-   - 後任者への引き継ぎが容易になる
-   - 部下への説明が明確にできる
+3. **Decision Recording and Knowledge Transfer**
+   - Decision rationale is stored as data
+   - Easy handover to successors
+   - Clear explanations to subordinates
 
-## システム概要
+## System Overview
 
-### MVP（最小実行可能プロダクト）の仕様
+### MVP (Minimum Viable Product) Specifications
 
-#### 1. 議題の入力
-ユーザーが解決したい課題・意思決定したい内容を入力
+#### 1. Topic Input
+Users enter the issues they want to resolve or decisions they need to make
 
-#### 2. ファシリテーターによるアジェンダ作成
-- **役割**: ファシリテーターAgent
-- **機能**:
-  - 入力された議題を複数の小議題に分割
-  - 議論の順序を決定（アジェンダの作成）
-  - 最終的な結論に至るための論理的な議論の流れを設計
+#### 2. Agenda Creation by Facilitator
+- **Role**: Facilitator Agent
+- **Functions**:
+  - Divide the input topic into multiple sub-topics
+  - Determine the discussion order (create agenda)
+  - Design a logical discussion flow to reach a final conclusion
 
-例：
+Example:
 ```
-元の議題: 新規事業の方向性について
+Original Topic: Direction for new business ventures
 ↓
-アジェンダ:
-1. 市場環境の分析
-2. 自社の強みの確認
-3. 事業候補の列挙
-4. 各候補の評価
-5. 最終的な事業選択
+Agenda:
+1. Market environment analysis
+2. Confirm company strengths
+3. List business candidates
+4. Evaluate each candidate
+5. Final business selection
 ```
 
-#### 3. 参加Agentの自動生成
-- **役割**: ファシリテーターAgent
-- **機能**:
-  - 議題に適した観点を持つAgent 4〜6人を自動生成
-  - 各Agentに特定の観点・専門性を付与
-  - 例：財務の専門家、マーケティング専門家、技術責任者、顧客視点の代弁者など
+#### 3. Automatic Agent Generation
+- **Role**: Facilitator Agent
+- **Functions**:
+  - Automatically generate 4-6 agents with perspectives suited to the topic
+  - Assign specific viewpoints and expertise to each agent
+  - Examples: Financial expert, marketing expert, technical lead, customer advocate, etc.
 
-#### 4. 議論プロセス（各アジェンダごとに実施）
+#### 4. Discussion Process (Conducted for Each Agenda Item)
 
-##### フェーズ1: 独立した意見出し
-- 各Agentが他者の意見に影響されず、自分の意見を表明
-- これにより会議の「緻密さ」を実現
-- すべてのAgentが意見を出し終えるまで他者の意見は非公開
+##### Phase 1: Independent Opinion Formation
+- Each agent expresses their opinion without being influenced by others
+- This achieves "rigor" in the meeting
+- Other opinions remain hidden until all agents have shared their views
 
-##### フェーズ2: 投票による意見の絞り込み
-- 各Agentが「論理的に最も良い」と思う意見を1つ選んで投票
-- 0票の意見は削除
-- 1票以上の意見のみ次のフェーズへ
+##### Phase 2: Voting to Narrow Opinions
+- Each agent votes for the one opinion they consider "most logically sound"
+- Opinions with 0 votes are eliminated
+- Only opinions with 1 or more votes proceed to the next phase
 
-##### フェーズ3: 少数派からの説得プロセス
-1. 最も票が少ない意見の支持者が、その意見の論理的優位性を説明
-2. 他のAgentがその説明に対して合意できるか判断
-3. 全員が合意 → その意見に決定
-4. 合意できない人がいる → 次に少数派の意見の説得へ
-5. 全員が一致する意見が出るまで繰り返し
+##### Phase 3: Persuasion Process Starting from Minority
+1. The supporter of the opinion with the fewest votes explains its logical superiority
+2. Other agents determine if they can agree with the explanation
+3. If everyone agrees → Decision made
+4. If someone cannot agree → Move to the next minority opinion for persuasion
+5. Repeat until a unanimous opinion emerges
 
-##### ファシリテーターの介入
-- 議論が平行線を辿る場合
-- より深い考察を促す鋭い問いかけを投げかける
-- 議論の質を高め、合意形成をサポート
+##### Facilitator Intervention
+- When the discussion reaches a deadlock
+- Pose sharp questions to encourage deeper consideration
+- Improve discussion quality and support consensus formation
 
-#### 5. 最終的なアウトプット
-- 各アジェンダに対する合意された結論
-- 元の議題に対する最終的な答え
-- すべての参加Agentが合意した論理的な意思決定
+#### 5. Final Output
+- Agreed-upon conclusions for each agenda item
+- Final answer to the original topic
+- Logical decision agreed upon by all participating agents
 
-## システムの特徴
+## System Features
 
-### 緻密性の確保
-- 独立した意見出しにより、同調圧力を排除
-- 多様な観点からの意見を確実に収集
+### Ensuring Rigor
+- Independent opinion formation eliminates conformity pressure
+- Reliably collects opinions from diverse perspectives
 
-### 論理性の追求
-- 感情や権威ではなく、論理的妥当性で意見を評価
-- 説得プロセスを通じて最も論理的な結論を導出
+### Pursuit of Logic
+- Opinions evaluated based on logical validity, not emotion or authority
+- Derive the most logical conclusion through persuasion process
 
-### 民主的プロセス
-- すべての意見が平等に扱われる
-- 少数派の意見も必ず聴取される
-- 全員の合意を目指す
+### Democratic Process
+- All opinions are treated equally
+- Minority opinions are always heard
+- Aim for unanimous consensus
 
-### 透明性と記録
-- すべての議論プロセスが記録される
-- 意思決定の根拠が明確
-- 後から振り返りや検証が可能
+### Transparency and Recording
+- All discussion processes are recorded
+- Decision rationale is clear
+- Review and verification possible after the fact
 
-## 技術スタック
+## Technology Stack
 
-### フロントエンド
+### Frontend
 - Next.js 16
 - React
 - TypeScript
 - Tailwind CSS
-- リアルタイムチャットUI（LINE風）
+- Real-time chat UI (LINE-style)
 
-### バックエンド
+### Backend
 - Python 3.11+
 - FastAPI
-- OpenAI Responses API（GPT-4.1-mini）
-- WebSocket（リアルタイム通信）
+- OpenAI Responses API (GPT-4.1-mini)
+- WebSocket (real-time communication)
 
-### 今後の拡張予定
-- データベース（議論履歴の保存）
-- 認証システム
-- Agent設定のカスタマイズ機能
+### Future Extensions
+- Database (discussion history storage)
+- Authentication system
+- Agent configuration customization features
 
-## MVP技術仕様詳細
+## MVP Technical Specifications
 
-### LLM設計
+### LLM Design
 
-#### 使用モデル
-- **OpenAI GPT-4.1-mini**を全Agentで使用
-- **Responses API**を使用（2025年に導入された新しいAPI）
-- 各Agentは独立したconversation state（異なる`previous_response_id`）
+#### Model Used
+- **OpenAI GPT-4.1-mini** for all agents
+- **Responses API** (new API introduced in 2025)
+- Each agent maintains independent conversation state (different `previous_response_id`)
 
-#### Responses APIの特徴
-OpenAIの新しいResponses APIは、サーバー側で会話の状態を管理する機能を持つ：
+#### Responses API Features
+OpenAI's new Responses API has server-side conversation state management capabilities:
 
-- **`store: true`パラメータ**: OpenAIのサーバー側に会話を保存
-- **`previous_response_id`**: 過去のresponse IDを指定して会話を継続
-- 従来のChat Completions APIと異なり、毎回全会話履歴を送る必要がない
-- IDを渡すだけで会話のコンテキストが維持される
+- **`store: true` parameter**: Saves conversations on OpenAI's server
+- **`previous_response_id`**: Continue conversation by specifying past response ID
+- Unlike the traditional Chat Completions API, no need to send entire conversation history each time
+- Conversation context is maintained by passing the ID alone
 
-#### コンテキスト管理の設計思想
-人間の思考プロセスを再現するため、以下のように設計：
+#### Context Management Design Philosophy
+Designed to reproduce human thought processes:
 
-1. **自分の意見（内部思考）**
-   - 各Agentは自分専用の`previous_response_id`チェーンを持つ
-   - `store: true`でOpenAIサーバー側に会話履歴を保存
-   - 自分が過去に考えたことは記憶として残る
-   - これが「自分の脳で考えたこと」を再現
+1. **Own Opinion (Internal Thinking)**
+   - Each agent has its own `previous_response_id` chain
+   - Conversation history saved on OpenAI server with `store: true`
+   - What an agent has thought in the past remains as memory
+   - This reproduces "what one has thought with one's own mind"
 
-2. **他者の意見（外部情報）**
-   - プロンプトとして明示的に共有
-   - 他者の意見は「外から入ってくる情報」として扱う
-   - 自分の思考チェーン（response_id）とは別のコンテキストとして管理
+2. **Others' Opinions (External Information)**
+   - Explicitly shared as prompts
+   - Others' opinions are treated as "information coming from outside"
+   - Managed as a separate context from one's own thought chain (response_id)
 
-#### 実装例
+#### Implementation Example
 ```python
-# Agent Aの最初の発言
+# Agent A's first statement
 response_a1 = client.responses.create(
     model="gpt-4.1-mini",
-    input="この議題についてあなたの意見を述べてください",
+    input="Please state your opinion on this topic",
     store=True
 )
 
-# Agent Aの2回目の発言（他者の意見を受けて）
+# Agent A's second statement (in response to others' opinions)
 response_a2 = client.responses.create(
     model="gpt-4.1-mini",
-    input=f"以下の意見について反論してください: {他者の意見}",
+    input=f"Please provide a counter-argument to the following opinion: {others_opinion}",
     previous_response_id=response_a1.id,
     store=True
 )
 ```
 
-この設計により、各Agentが：
-- 自分の一貫した思考を持ちながら
-- 他者の意見を新しい情報として受け取り
-- それに対して反応する
+This design enables each agent to:
+- Maintain consistent thinking
+- Receive others' opinions as new information
+- React to them
 
-という、人間らしい議論を実現
+Thus achieving human-like discussion
 
-### Agent生成
+### Agent Generation
 
-#### MVP仕様
-- **完全自動生成**
-  - ファシリテーターが議題を分析し、4〜6人のAgentを自動生成
-  - ユーザーによる調整機能はMVP後に実装予定
+#### MVP Specification
+- **Fully automatic generation**
+  - Facilitator analyzes the topic and automatically generates 4-6 agents
+  - User adjustment features planned for post-MVP
 
-### 議論の進行
+### Discussion Flow
 
-#### 自動進行
-- すべてのフェーズは自動で進行
-- ユーザーの「次へ」ボタンなどの介入は不要
-- ユーザーはリアルタイムで議論を観察
+#### Automatic Progression
+- All phases progress automatically
+- No user intervention such as "Next" button required
+- Users observe the discussion in real-time
 
-#### 意見の表現形式
-- **端的で明確な文章形式**
-- 各意見は以下の構造を推奨：
+#### Opinion Expression Format
+- **Concise and clear text format**
+- Each opinion follows this recommended structure:
   ```
-  結論: [簡潔な主張]
-  根拠: [論理的な理由]
+  Conclusion: [Brief claim]
+  Rationale: [Logical reasoning]
   ```
-- 長すぎない、要点を押さえた発言
+- Not too long, capturing key points
 
-### 説得プロセス
+### Persuasion Process
 
-#### 双方向の議論
-- 説得者がプレゼンテーション
-- **他のAgentは反論可能**
-- 説得者も反論を聞いて考えを変えることがある
-- これにより、多数派の意見に少数派が納得する流れも再現
+#### Bidirectional Discussion
+- Persuader presents
+- **Other agents can counter-argue**
+- Persuader may change their mind after hearing counter-arguments
+- This also reproduces the flow where minority convinces majority
 
-#### 反論の流れ
-1. 少数派Agentが説得を試みる
-2. 他のAgentが反論・質問
-3. 説得者が応答
-4. 再度、各Agentが合意/不合意を表明
-5. 説得者自身も、他の意見に納得すれば意見を変更可能
+#### Counter-argument Flow
+1. Minority agent attempts persuasion
+2. Other agents counter-argue or question
+3. Persuader responds
+4. Each agent again expresses agreement/disagreement
+5. Persuader can also change their opinion if convinced by others
 
-### 合意判定
+### Consensus Determination
 
-#### 明示的な表明
-- 各Agentが**Yes/No**を明示的に表明
-- ファシリテーターは進行役のみで、判定には関与しない
-- 全Agentが「Yes」で合意成立
+#### Explicit Declaration
+- Each agent explicitly declares **Yes/No**
+- Facilitator only moderates, does not participate in determination
+- Consensus reached when all agents say "Yes"
 
-### UI/UX設計
+### UI/UX Design
 
-#### チャット形式のリアルタイム表示
-- **LINE風のチャットUI**
-- 議論がリアルタイムで流れるように表示
-- 各Agent発言ごとに吹き出しを表示
-- ユーザーは会議の様子をライブで観察
+#### Real-time Chat-style Display
+- **LINE-style chat UI**
+- Discussion flows in real-time display
+- Speech bubble displayed for each agent's statement
+- Users observe the meeting live
 
-#### 表示内容
-- すべてのAgentの発言を表示
-- 要約は行わず、議論の全体像を見せる
-- フェーズ遷移も明示的に表示
+#### Display Content
+- Display all agent statements
+- No summarization, show full discussion
+- Phase transitions also explicitly displayed
 
-### データ保存
+### Data Storage
 
-#### MVP段階
-- **データベースは使用しない**
-- 議論の質に集中するため、シンプルな構成
-- セッション中のみデータを保持
+#### MVP Stage
+- **No database used**
+- Simple configuration to focus on discussion quality
+- Data retained only during session
 
-#### Phase 2以降
-- 議論履歴の永続化
-- 検索・分析機能の追加
+#### Phase 2 and Beyond
+- Persistent discussion history
+- Search and analysis features
 
-### 議論の終了条件
+### Discussion Termination Conditions
 
-#### MVP仕様
-- **全員が合意するまで継続**
-- 最大ターン数や時間制限は設けない
-- まずは質の高い合意形成プロセスが機能するかを検証
+#### MVP Specification
+- **Continue until unanimous agreement**
+- No maximum turn count or time limit
+- First verify if high-quality consensus formation process works
 
-#### 将来的な拡張
-- 運用結果を見て、必要であれば終了条件を追加
-- 例：最大ターン数、時間制限、ユーザーによる強制終了など
+#### Future Extensions
+- Based on operational results, add termination conditions if needed
+- Examples: Maximum turn count, time limit, user-forced termination, etc.
 
-## 開発フェーズ
+## Development Phases
 
-### Phase 1: MVP開発
-- [ ] ファシリテーターAgentの実装
-- [ ] アジェンダ自動生成機能
-- [ ] 参加Agent自動生成機能
-- [ ] 議論プロセスの実装
-  - [ ] 独立意見出し
-  - [ ] 投票機能
-  - [ ] 説得プロセス
-- [ ] 基本的なUI/UX
+### Phase 1: MVP Development
+- [ ] Facilitator Agent implementation
+- [ ] Automatic agenda generation feature
+- [ ] Automatic participant agent generation feature
+- [ ] Discussion process implementation
+  - [ ] Independent opinion formation
+  - [ ] Voting feature
+  - [ ] Persuasion process
+- [ ] Basic UI/UX
 
-### Phase 2: 機能拡張
-- [ ] 議論履歴の保存・検索
-- [ ] ユーザーアカウント管理
-- [ ] 議論の中断・再開機能
-- [ ] より高度なファシリテーション機能
+### Phase 2: Feature Extensions
+- [ ] Discussion history storage and search
+- [ ] User account management
+- [ ] Discussion pause and resume feature
+- [ ] More advanced facilitation features
 
-### Phase 3: エンタープライズ機能
-- [ ] 組織管理機能
-- [ ] 権限管理
-- [ ] 議論テンプレート
-- [ ] 分析・レポート機能
-- [ ] 意思決定のトレーサビリティ
+### Phase 3: Enterprise Features
+- [ ] Organization management features
+- [ ] Permission management
+- [ ] Discussion templates
+- [ ] Analysis and reporting features
+- [ ] Decision traceability
 
-## 期待される効果
+## Expected Benefits
 
-1. **意思決定の質の向上**
-   - より多角的な視点
-   - より論理的な結論
+1. **Improved Decision Quality**
+   - More multi-perspective viewpoints
+   - More logical conclusions
 
-2. **意思決定の速度向上**
-   - AIによる高速な議論
-   - 日程調整不要
+2. **Faster Decision Making**
+   - Fast discussion by AI
+   - No scheduling required
 
-3. **組織知の蓄積**
-   - 意思決定プロセスの記録
-   - ナレッジの継承
+3. **Organizational Knowledge Accumulation**
+   - Recording of decision-making processes
+   - Knowledge transfer
 
-4. **説明責任の向上**
-   - 透明性のある意思決定プロセス
-   - 根拠の明確化
+4. **Enhanced Accountability**
+   - Transparent decision-making process
+   - Clear rationale
