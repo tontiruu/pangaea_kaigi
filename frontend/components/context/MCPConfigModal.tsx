@@ -9,15 +9,13 @@ import {
   faTimes,
   faCheckCircle,
   faCircle,
-  faFileAlt,
-  faComments,
-  faTasks,
   faPlus,
   faKey,
   faGlobe,
   faExternalLinkAlt,
 } from '@fortawesome/free-solid-svg-icons';
 import { SourceInfo } from '@/types/context';
+import Image from 'next/image';
 
 interface MCPConfigModalProps {
   isOpen: boolean;
@@ -28,7 +26,7 @@ interface MCPConfigModalProps {
 
 const SOURCE_CONFIG = {
   Notion: {
-    icon: faFileAlt,
+    iconPath: '/tool/notion.png',
     gradient: 'linear-gradient(to bottom right, #1F1F1F, #000000)',
     description: 'ドキュメントとナレッジベースから情報を取得',
     setupFields: [
@@ -38,7 +36,7 @@ const SOURCE_CONFIG = {
     docUrl: 'https://developers.notion.com/'
   },
   Slack: {
-    icon: faComments,
+    iconPath: '/tool/slack.png',
     gradient: 'linear-gradient(to bottom right, #611f69, #4A154B)',
     description: 'チャンネルの会話履歴から情報を取得',
     setupFields: [
@@ -48,7 +46,7 @@ const SOURCE_CONFIG = {
     docUrl: 'https://api.slack.com/apps'
   },
   Atlassian: {
-    icon: faTasks,
+    iconPath: '/tool/atlassian.png',
     gradient: 'linear-gradient(to bottom right, #0052CC, #0747A6)',
     description: 'Jira/Confluenceから情報を取得',
     setupFields: [
@@ -152,12 +150,17 @@ export function MCPConfigModal({ isOpen, onClose, onComplete, sources }: MCPConf
                   >
                     <div className="flex items-start gap-4">
                       <div
-                        className={`flex-shrink-0 w-14 h-14 rounded-xl flex items-center justify-center shadow-lg ring-2 ring-white transition-all duration-300 ${
+                        className={`flex-shrink-0 w-14 h-14 rounded-xl flex items-center justify-center shadow-lg ring-2 ring-white transition-all duration-300 overflow-hidden bg-white ${
                           !source.enabled && 'hover:scale-110 hover:rotate-6'
                         }`}
-                        style={{ background: config.gradient }}
                       >
-                        <FontAwesomeIcon icon={config.icon} className="text-white text-xl" />
+                        <Image
+                          src={config.iconPath}
+                          alt={source.name}
+                          width={56}
+                          height={56}
+                          className="object-contain p-1"
+                        />
                       </div>
 
                       <div className="flex-1">
@@ -229,10 +232,15 @@ export function MCPConfigModal({ isOpen, onClose, onComplete, sources }: MCPConf
                   <div>
                     <div className="flex items-center gap-4 mb-6">
                       <div
-                        className="w-16 h-16 rounded-xl flex items-center justify-center shadow-lg"
-                        style={{ background: config.gradient }}
+                        className="w-16 h-16 rounded-xl flex items-center justify-center shadow-lg overflow-hidden bg-white"
                       >
-                        <FontAwesomeIcon icon={config.icon} className="text-white text-2xl" />
+                        <Image
+                          src={config.iconPath}
+                          alt={selectedSource}
+                          width={64}
+                          height={64}
+                          className="object-contain p-1"
+                        />
                       </div>
                       <div>
                         <h3 className="text-2xl font-bold text-gray-800">{selectedSource} 連携設定</h3>

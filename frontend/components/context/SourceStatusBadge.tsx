@@ -8,15 +8,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCheckCircle,
   faTimesCircle,
-  faFileAlt,
-  faComments,
-  faTasks,
   faChevronDown,
   faChevronUp,
   faCog,
 } from '@fortawesome/free-solid-svg-icons';
 import { SourceInfo } from '@/types/context';
 import { MCPConfigModal } from './MCPConfigModal';
+import Image from 'next/image';
 
 // モックデータ
 const MOCK_SOURCES: SourceInfo[] = [
@@ -38,9 +36,9 @@ const MOCK_SOURCES: SourceInfo[] = [
 ];
 
 const SOURCE_ICONS = {
-  'Notion': faFileAlt,
-  'Slack': faComments,
-  'Atlassian': faTasks
+  'Notion': '/tool/notion.png',
+  'Slack': '/tool/slack.png',
+  'Atlassian': '/tool/atlassian.png'
 } as const;
 
 export function SourceStatusBadge() {
@@ -140,18 +138,16 @@ export function SourceStatusBadge() {
               >
                 <div className="flex items-center gap-3">
                   <div
-                    className={`w-9 h-9 rounded-lg flex items-center justify-center shadow-md transition-all duration-300 ${
+                    className={`w-9 h-9 rounded-lg flex items-center justify-center shadow-md transition-all duration-300 overflow-hidden bg-white ${
                       source.enabled ? 'hover:scale-110' : 'opacity-50'
                     }`}
-                    style={{
-                      background: source.enabled
-                        ? 'linear-gradient(to bottom right, var(--primary-light), var(--primary-dark))'
-                        : 'linear-gradient(to bottom right, var(--neutral-300), var(--neutral-400))'
-                    }}
                   >
-                    <FontAwesomeIcon
-                      icon={SOURCE_ICONS[source.name as keyof typeof SOURCE_ICONS]}
-                      className="text-white text-sm"
+                    <Image
+                      src={SOURCE_ICONS[source.name as keyof typeof SOURCE_ICONS]}
+                      alt={source.name}
+                      width={36}
+                      height={36}
+                      className="object-contain p-0.5"
                     />
                   </div>
 

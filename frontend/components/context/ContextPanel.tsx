@@ -35,7 +35,7 @@ export function ContextPanel({
       {/* 取得前: ボタン表示 */}
       {!hasRetrieved && !loading && (
         <div className="flex gap-3 animate-scale-in" style={{ animationDelay: '0.5s' }}>
-          <button
+          {/* <button
             onClick={onRetrieve}
             className="flex-1 px-6 py-3 rounded-2xl font-bold text-gray-800 bg-white border-2 border-gray-200 shadow-md hover:shadow-xl hover:scale-[1.02] hover:-translate-y-0.5 transition-all duration-500 flex items-center justify-center gap-2 group"
           >
@@ -45,7 +45,7 @@ export function ContextPanel({
               style={{ color: 'var(--accent-warning)' }}
             />
             背景知識を取得
-          </button>
+          </button> */}
           <button
             onClick={onStartDiscussion}
             className="flex-1 px-6 py-3 rounded-2xl font-bold text-white hover:shadow-2xl hover:scale-[1.02] hover:-translate-y-0.5 transition-all duration-500 flex items-center justify-center gap-2"

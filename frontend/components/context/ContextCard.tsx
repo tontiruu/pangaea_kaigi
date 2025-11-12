@@ -6,14 +6,12 @@
 import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faFileAlt,
-  faComments as faSlack,
-  faTasks,
   faChevronDown,
   faChevronUp,
   faExternalLinkAlt,
 } from '@fortawesome/free-solid-svg-icons';
 import { ContextItem, SourceType } from '@/types/context';
+import Image from 'next/image';
 
 interface ContextCardProps {
   context: ContextItem;
@@ -22,21 +20,21 @@ interface ContextCardProps {
 
 const SOURCE_CONFIG = {
   notion: {
-    icon: faFileAlt,
+    iconPath: '/tool/notion.png',
     label: 'Notion',
     gradient: 'linear-gradient(to bottom right, #1F1F1F, #000000)',
     bgColor: 'from-neutral-50 to-neutral-100',
     borderColor: 'var(--neutral-400)'
   },
   slack: {
-    icon: faSlack,
+    iconPath: '/tool/slack.png',
     label: 'Slack',
     gradient: 'linear-gradient(to bottom right, #611f69, #4A154B)',
     bgColor: 'from-purple-50 to-fuchsia-100',
     borderColor: '#611f69'
   },
   atlassian: {
-    icon: faTasks,
+    iconPath: '/tool/atlassian.png',
     label: 'Atlassian',
     gradient: 'linear-gradient(to bottom right, #0052CC, #0747A6)',
     bgColor: 'from-blue-50 to-indigo-100',
@@ -65,10 +63,15 @@ export function ContextCard({ context, index }: ContextCardProps) {
       <div className="flex items-start gap-4">
         {/* ソースアイコン */}
         <div
-          className="flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center shadow-lg ring-2 ring-white/50 transition-all duration-300 hover:scale-110 hover:rotate-6"
-          style={{ background: config.gradient }}
+          className="flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center shadow-lg ring-2 ring-white/50 transition-all duration-300 hover:scale-110 hover:rotate-6 overflow-hidden bg-white"
         >
-          <FontAwesomeIcon icon={config.icon} className="text-white text-lg" />
+          <Image
+            src={config.iconPath}
+            alt={config.label}
+            width={44}
+            height={44}
+            className="object-contain p-1"
+          />
         </div>
 
         {/* コンテンツ */}
