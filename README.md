@@ -87,3 +87,17 @@ make stop
 - Python 3.11+
 - FastAPI
 - Uvicorn
+- Pydantic Settings（環境変数管理）
+
+## 環境変数
+
+バックエンドで使用可能な環境変数：
+
+| 変数名 | 説明 | デフォルト値 |
+|--------|------|--------------|
+| `DEBUG` | デバッグモード | `True` |
+| `APP_NAME` | アプリケーション名 | `Pangaea Kaigi API` |
+| `API_VERSION` | APIバージョン | `0.1.0` |
+| `HOST` | サーバーホスト | `0.0.0.0` |
+| `PORT` | サーバーポート | `8000` |
+| `CORS_ORIGINS` | CORS許可オリジン（カンマ区切り） | `http://localhost:3000,http://127.0.0.1:3000` |
