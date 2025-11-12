@@ -4,7 +4,7 @@ from config import settings
 from api.routes import router
 import logging
 
-# ロギング設定
+# Logging configuration
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
@@ -16,7 +16,7 @@ app = FastAPI(
     debug=settings.debug,
 )
 
-# CORS設定（フロントエンドからのリクエストを許可）
+# CORS configuration (allow requests from frontend)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,
@@ -25,14 +25,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ルーターを含める
+# Include router
 app.include_router(router)
 
 
 @app.get("/")
 async def root():
     return {
-        "message": "Pangaea Kaigi API - AI議論システム",
+        "message": "Pangaea Kaigi API - AI Discussion System",
         "app_name": settings.app_name,
         "version": settings.api_version,
         "docs": "/docs",

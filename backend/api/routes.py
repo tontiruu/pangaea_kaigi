@@ -1,4 +1,4 @@
-"""APIルート定義"""
+"""API route definitions"""
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect, HTTPException
 from pydantic import BaseModel
 from typing import List
@@ -18,43 +18,43 @@ router = APIRouter()
 
 
 class StartDiscussionRequest(BaseModel):
-    """議論開始リクエスト"""
+    """Start discussion request"""
     topic: str
 
 
 class ContextRetrievalRequest(BaseModel):
-    """背景知識取得リクエスト"""
+    """Context retrieval request"""
     topic: str
     keywords: List[str] = []
 
 
 @router.post("/api/discussions/start")
 async def start_discussion_endpoint(request: StartDiscussionRequest):
-    """議論開始エンドポイント（HTTPベース）"""
+    """Start discussion endpoint (HTTP-based)"""
     try:
-        # TODO: 実装
-        return {"message": "議論を開始します", "topic": request.topic}
+        # TODO: Implementation
+        return {"message": "Starting discussion", "topic": request.topic}
     except Exception as e:
-        logger.error(f"議論開始エラー: {e}")
+        logger.error(f"Discussion start error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.websocket("/ws/discussion")
 async def websocket_discussion_endpoint(websocket: WebSocket):
-    """WebSocketエンドポイント - 議論のリアルタイム通信"""
+    """WebSocket endpoint - Real-time discussion communication"""
     discussion_id = None
 
     try:
         await websocket.accept()
-        logger.info("WebSocket接続を受け入れました")
+        logger.info("WebSocket connection accepted")
 
-        # 最初のメッセージを受信（議題を含む）
+        # Receive first message (including topic)
         data = await websocket.receive_json()
 
         if data.get("type") != "start_discussion":
             await websocket.send_json({
                 "type": "error",
-                "data": {"message": "最初のメッセージは start_discussion である必要があります"}
+                "data": {"message": "First message must be start_discussion"}
             })
             await websocket.close()
             return
@@ -63,41 +63,41 @@ async def websocket_discussion_endpoint(websocket: WebSocket):
         if not topic:
             await websocket.send_json({
                 "type": "error",
-                "data": {"message": "議題(topic)が必要です"}
+                "data": {"message": "Topic is required"}
             })
             await websocket.close()
             return
 
-        # OpenAI クライアント初期化
+        # Initialize OpenAI client
         openai_client = OpenAIResponsesClient(api_key=settings.openai_api_key)
         agent_manager = AgentManager(openai_client)
         facilitator = Facilitator(openai_client, agent_manager)
 
-        # メッセージ送信用コールバック
+        # Message sending callback
         async def send_message(message: dict):
             try:
                 await websocket.send_json(message)
             except Exception as e:
-                logger.error(f"WebSocketメッセージ送信エラー: {e}")
+                logger.error(f"WebSocket message send error: {e}")
 
-        # DiscussionEngine 初期化
+        # Initialize DiscussionEngine
         discussion_engine = DiscussionEngine(
             facilitator=facilitator,
             agent_manager=agent_manager,
             message_callback=send_message,
         )
 
-        # 議論開始
-        logger.info(f"議論開始: {topic}")
+        # Start discussion
+        logger.info(f"Starting discussion: {topic}")
         session = await discussion_engine.start_discussion(topic)
         discussion_id = session.id
 
-        logger.info(f"議論完了: {discussion_id}")
+        logger.info(f"Discussion completed: {discussion_id}")
 
     except WebSocketDisconnect:
-        logger.info("WebSocket切断されました")
+        logger.info("WebSocket disconnected")
     except Exception as e:
-        logger.error(f"WebSocketエラー: {e}")
+        logger.error(f"WebSocket error: {e}")
         try:
             await websocket.send_json({
                 "type": "error",
@@ -115,25 +115,25 @@ async def websocket_discussion_endpoint(websocket: WebSocket):
 @router.post("/api/context/retrieve")
 async def retrieve_context_endpoint(request: ContextRetrievalRequest):
     """
-    背景知識取得エンドポイント（テスト用）
+    Context retrieval endpoint (for testing)
 
-    議論トピックに関連する背景知識をNotion/Slack/Atlassianから取得します。
-    現在はモックデータを返します。
+    Retrieves background knowledge related to discussion topics from Notion/Slack/Atlassian.
+    Currently returns mock data.
     """
     try:
-        # ContextRetrieverを初期化（モックモード）
+        # Initialize ContextRetriever (mock mode)
         retriever = ContextRetriever(use_mock=True)
 
-        # キーワードが指定されていない場合は自動抽出
+        # Automatically extract keywords if not specified
         keywords = request.keywords
         if not keywords:
-            # 簡易的なキーワード抽出
+            # Simple keyword extraction
             keywords = [word.strip() for word in request.topic.split() if len(word.strip()) > 2][:5]
 
-        # 背景知識を取得
+        # Retrieve background knowledge
         context_items = await retriever.retrieve_context(request.topic, keywords)
 
-        # レスポンスを整形
+        # Format response
         return {
             "topic": request.topic,
             "keywords": keywords,
@@ -151,31 +151,31 @@ async def retrieve_context_endpoint(request: ContextRetrievalRequest):
         }
 
     except Exception as e:
-        logger.error(f"背景知識取得エラー: {e}")
+        logger.error(f"Context retrieval error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/api/context/sources")
 async def get_context_sources():
     """
-    利用可能な背景知識ソースの情報を取得
+    Get information about available context sources
     """
     return {
         "sources": [
             {
                 "name": "notion",
                 "enabled": bool(settings.notion_token),
-                "description": "Notionから関連ドキュメントを検索"
+                "description": "Search related documents from Notion"
             },
             {
                 "name": "slack",
                 "enabled": bool(settings.slack_bot_token),
-                "description": "Slackから過去の議論を検索"
+                "description": "Search past discussions from Slack"
             },
             {
                 "name": "atlassian",
                 "enabled": bool(settings.atlassian_api_token),
-                "description": "JiraとConfluenceから情報を検索"
+                "description": "Search information from Jira and Confluence"
             }
         ],
         "dedalus_configured": bool(settings.dedalus_api_key),
@@ -185,5 +185,5 @@ async def get_context_sources():
 
 @router.get("/api/health")
 async def health_check():
-    """ヘルスチェック"""
+    """Health check"""
     return {"status": "healthy", "service": "pangaea-kaigi-backend"}

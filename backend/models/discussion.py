@@ -1,4 +1,4 @@
-"""議論セッションモデル定義"""
+"""Discussion session model definitions"""
 from pydantic import BaseModel, Field
 from typing import List, Optional
 from enum import Enum
@@ -6,7 +6,7 @@ from datetime import datetime
 
 
 class DiscussionPhase(str, Enum):
-    """議論のフェーズ"""
+    """Discussion phase"""
     INITIALIZING = "initializing"
     AGENDA_CREATION = "agenda_creation"
     AGENT_GENERATION = "agent_generation"
@@ -17,20 +17,20 @@ class DiscussionPhase(str, Enum):
 
 
 class AgendaItem(BaseModel):
-    """アジェンダアイテム"""
-    id: str = Field(..., description="アジェンダID")
-    title: str = Field(..., description="アジェンダタイトル")
-    description: str = Field(..., description="アジェンダ詳細")
-    order: int = Field(..., description="議論順序")
-    conclusion: Optional[str] = Field(None, description="結論")
+    """Agenda item"""
+    id: str = Field(..., description="Agenda ID")
+    title: str = Field(..., description="Agenda title")
+    description: str = Field(..., description="Agenda details")
+    order: int = Field(..., description="Discussion order")
+    conclusion: Optional[str] = Field(None, description="Conclusion")
 
 
 class DiscussionSession(BaseModel):
-    """議論セッション"""
-    id: str = Field(..., description="セッションID")
-    topic: str = Field(..., description="議論する議題")
-    agenda: List[AgendaItem] = Field(default_factory=list, description="アジェンダリスト")
-    current_agenda_index: int = Field(default=0, description="現在のアジェンダインデックス")
-    phase: DiscussionPhase = Field(default=DiscussionPhase.INITIALIZING, description="現在のフェーズ")
-    created_at: datetime = Field(default_factory=datetime.now, description="作成日時")
-    final_conclusion: Optional[str] = Field(None, description="最終結論")
+    """Discussion session"""
+    id: str = Field(..., description="Session ID")
+    topic: str = Field(..., description="Discussion topic")
+    agenda: List[AgendaItem] = Field(default_factory=list, description="Agenda list")
+    current_agenda_index: int = Field(default=0, description="Current agenda index")
+    phase: DiscussionPhase = Field(default=DiscussionPhase.INITIALIZING, description="Current phase")
+    created_at: datetime = Field(default_factory=datetime.now, description="Creation timestamp")
+    final_conclusion: Optional[str] = Field(None, description="Final conclusion")

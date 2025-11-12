@@ -322,9 +322,19 @@ class DiscussionEngine:
                 if await self._check_consensus(opinion):
                     await self._send_message(
                         agent=self.facilitator.agent,
-                        content=f"Consensus has been reached!",
+                        content=f"Consensus has been reached! All participants agree.",
                         message_type=MessageType.CONCLUSION,
                     )
+
+                    # If there are more agenda items, notify about moving to next topic
+                    if self.session.current_agenda_index < len(self.session.agenda) - 1:
+                        next_agenda = self.session.agenda[self.session.current_agenda_index + 1]
+                        await self._send_message(
+                            agent=self.facilitator.agent,
+                            content=f"Moving to next agenda item: {next_agenda.title}",
+                            message_type=MessageType.SYSTEM,
+                        )
+
                     return opinion.content
 
         return opinions[0].content
