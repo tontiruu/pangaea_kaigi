@@ -16,22 +16,22 @@ import { SourceInfo } from '@/types/context';
 import { MCPConfigModal } from './MCPConfigModal';
 import Image from 'next/image';
 
-// モックデータ
+// Mock data
 const MOCK_SOURCES: SourceInfo[] = [
   {
     name: 'Notion',
     enabled: true,
-    description: 'ドキュメントとナレッジベースから情報を取得'
+    description: 'Retrieve information from documents and knowledge base'
   },
   {
     name: 'Slack',
     enabled: false,
-    description: 'チャンネルの会話履歴から情報を取得'
+    description: 'Retrieve information from channel conversation history'
   },
   {
     name: 'Atlassian',
     enabled: true,
-    description: 'Jira/Confluenceから情報を取得'
+    description: 'Retrieve information from Jira/Confluence'
   }
 ];
 
@@ -48,12 +48,12 @@ export function SourceStatusBadge() {
   const [showConfigModal, setShowConfigModal] = useState(false);
 
   useEffect(() => {
-    // モック: APIコールのシミュレーション
+    // Mock: Simulate API call
     const fetchSources = async () => {
       setLoading(true);
       await new Promise((resolve) => setTimeout(resolve, 500));
 
-      // 実際のAPIコール（将来の実装用）
+      // Actual API call (for future implementation)
       // const response = await fetch('/api/context/sources');
       // const data = await response.json();
       // setSources(data.sources);
@@ -75,7 +75,7 @@ export function SourceStatusBadge() {
   };
 
   const handleConfigComplete = () => {
-    // モック: 実際はAPIから最新の状態を取得
+    // Mock: In reality, retrieve the latest state from API
     setSources(MOCK_SOURCES);
   };
 
@@ -92,7 +92,7 @@ export function SourceStatusBadge() {
 
   return (
     <div className="relative">
-      {/* バッジボタン */}
+      {/* Badge button */}
       <button
         onClick={() => setExpanded(!expanded)}
         className="bg-white rounded-xl px-4 py-2 border border-gray-200 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 flex items-center gap-2 group"
@@ -104,7 +104,7 @@ export function SourceStatusBadge() {
             style={{ color: enabledCount > 0 ? 'var(--primary)' : 'var(--neutral-400)' }}
           />
           <span className="text-xs font-semibold text-gray-700">
-            MCP連携: {enabledCount}/{sources.length}
+            MCP Integration: {enabledCount}/{sources.length}
           </span>
         </div>
         <FontAwesomeIcon
@@ -113,7 +113,7 @@ export function SourceStatusBadge() {
         />
       </button>
 
-      {/* 展開パネル */}
+      {/* Expanded panel */}
       {expanded && (
         <div className="absolute top-full right-0 mt-2 w-80 bg-white rounded-2xl border border-gray-200 shadow-2xl p-4 z-50 animate-card-pop">
           <h3 className="font-bold text-sm text-gray-800 mb-3 flex items-center gap-2">
@@ -123,7 +123,7 @@ export function SourceStatusBadge() {
             >
               <FontAwesomeIcon icon={faCheckCircle} className="text-white text-sm" />
             </div>
-            背景知識連携設定
+            Background Knowledge Integration Settings
           </h3>
 
           <div className="space-y-2">
@@ -163,7 +163,7 @@ export function SourceStatusBadge() {
                             : 'bg-gray-300 text-gray-600'
                         }`}
                       >
-                        {source.enabled ? '設定済み' : '未設定'}
+                        {source.enabled ? 'Configured' : 'Not Configured'}
                       </span>
                     </div>
                     <p className="text-xs text-gray-600 leading-relaxed">
@@ -179,7 +179,7 @@ export function SourceStatusBadge() {
             <div className="flex items-center gap-2 text-xs text-gray-600">
               <FontAwesomeIcon icon={faCheckCircle} style={{ color: 'var(--primary)' }} />
               <span>
-                Dedalus Labs API: <span className="font-semibold">設定済み</span>
+                Dedalus Labs API: <span className="font-semibold">Configured</span>
               </span>
             </div>
             <button
@@ -191,13 +191,13 @@ export function SourceStatusBadge() {
               className="px-3 py-1.5 rounded-lg bg-white border border-gray-200 hover:bg-gray-50 transition-all duration-300 flex items-center gap-2 text-xs font-semibold text-gray-700 hover:scale-105"
             >
               <FontAwesomeIcon icon={faCog} />
-              設定
+              Settings
             </button>
           </div>
         </div>
       )}
 
-      {/* 設定モーダル */}
+      {/* Configuration modal */}
       <MCPConfigModal
         isOpen={showConfigModal}
         onClose={() => setShowConfigModal(false)}

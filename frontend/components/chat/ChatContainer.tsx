@@ -1,5 +1,5 @@
 /**
- * チャットコンテナコンポーネント
+ * Chat Container Component
  */
 'use client';
 
@@ -29,8 +29,8 @@ export function ChatContainer({ messages }: ChatContainerProps) {
           <div className="w-20 h-20 rounded-2xl flex items-center justify-center mb-6 shadow-lg animate-float-up" style={{ background: 'linear-gradient(to bottom right, rgba(0, 212, 168, 0.2), rgba(51, 224, 186, 0.2))' }}>
             <div className="w-4 h-4 rounded-full animate-pulse" style={{ background: 'linear-gradient(to right, var(--primary), var(--primary-light))' }}></div>
           </div>
-          <p className="text-lg font-medium text-gray-500 mb-2 animate-fade-in" style={{ animationDelay: '0.2s' }}>議論の準備中</p>
-          <p className="text-sm text-gray-400 animate-fade-in" style={{ animationDelay: '0.4s' }}>まもなく開始されます...</p>
+          <p className="text-lg font-medium text-gray-500 mb-2 animate-fade-in" style={{ animationDelay: '0.2s' }}>Preparing for discussion</p>
+          <p className="text-sm text-gray-400 animate-fade-in" style={{ animationDelay: '0.4s' }}>Starting soon...</p>
         </div>
       ) : (
         <div className="max-w-4xl mx-auto">

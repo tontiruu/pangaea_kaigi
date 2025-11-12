@@ -16,213 +16,108 @@ We target the most complex, person-dependent, and legacy workflow in any company
 
 The "black box" nature of AI is a key governance challenge. Our service "logs the entire discussion process" leading to a decision. This makes the thought process of both AI (and humans) fully "auditable," fulfilling a high level of "accountability" to stakeholders, shareholders, and auditors.
 
-フロントエンド（Next.js + React）とバックエンド（FastAPI）を含むフルスタックアプリケーション。
+---
 
-## 構成
+## Setup
 
-```
-pangaea_kaigi/
-├── backend/          # FastAPI バックエンド
-│   ├── main.py       # FastAPIアプリケーション
-│   ├── config.py     # 設定管理
-│   ├── requirements.txt
-│   ├── .env.example  # 環境変数のテンプレート
-│   └── .gitignore
-├── frontend/         # Next.js フロントエンド
-├── Makefile          # プロジェクト管理用Makefile
-└── README.md
-```
+### Prerequisites
 
-## セットアップ
+- Node.js (v18 or higher)
+- Python 3.8+
+- npm or yarn
 
-### 1. 環境変数の設定
+### Backend Setup
 
-バックエンドの環境変数を設定します：
-
+1. Navigate to the backend directory:
 ```bash
 cd backend
-cp .env.example .env
 ```
 
-必要に応じて`.env`ファイルを編集してください。
-
-### 2. 依存関係のインストール
-
+2. Install Python dependencies:
 ```bash
-make install
+pip install -r requirements.txt
 ```
 
-または個別に：
+3. Set up environment variables:
+Create a `.env` file in the backend directory with the following:
+```
+OPENAI_API_KEY=your_openai_api_key
+ANTHROPIC_API_KEY=your_anthropic_api_key
+```
 
+4. Start the backend server:
 ```bash
-make install-backend  # バックエンドの依存関係
-make install-frontend # フロントエンドの依存関係
+python main.py
 ```
 
-## 起動方法
+The backend will run on `http://localhost:8000`
 
-### 両方を同時に起動
+### Frontend Setup
 
+1. Navigate to the frontend directory:
 ```bash
-make start
+cd frontend
 ```
 
-このコマンドで以下が起動します：
-
-- バックエンド: http://localhost:8000
-- フロントエンド: http://localhost:3000
-
-### 個別に起動
-
+2. Install dependencies:
 ```bash
-make dev-backend   # バックエンドのみ
-make dev-frontend  # フロントエンドのみ
+npm install
 ```
 
-## 停止方法
-
+3. Start the development server:
 ```bash
-make stop
+npm run dev
 ```
 
-## API エンドポイント
+The frontend will run on `http://localhost:3000`
 
-バックエンドは以下のエンドポイントを提供します：
+---
 
-- `GET /` - ルートエンドポイント
-- `GET /api/health` - ヘルスチェック
+## Demo Instructions
 
-## 技術スタック
+1. **Access the Application**: Open your browser and navigate to `http://localhost:3000`
 
-### フロントエンド
+2. **Configure Context Sources** (Optional):
+   - Click the "Context Sources" button to open the MCP configuration panel
+   - Currently supports mock data integration
+   - Future versions will support Slack, Notion, and other enterprise knowledge sources via Dedaluslabs.ai
 
-- Next.js 16
-- React
-- TypeScript
-- Tailwind CSS
+3. **Start a Discussion**:
+   - Enter your discussion topic or question in the chat input
+   - The system will automatically generate relevant issues using MECE (Mutually Exclusive, Collectively Exhaustive) framework
+   - AI agents will engage in structured debate to explore different perspectives
 
-### バックエンド
+4. **Monitor the Discussion**:
+   - Watch as multiple AI agents (Strategist, Analyst, Devil's Advocate, etc.) contribute their viewpoints
+   - The Facilitator Agent guides the discussion and ensures balanced coverage
+   - View retrieved context from your configured sources in the Context Panel
 
-- Python 3.11+
-- FastAPI
-- Uvicorn
-- Pydantic Settings（環境変数管理）
+5. **Review Results**:
+   - The discussion will converge toward a consensus-based conclusion
+   - All discussion logs are preserved for auditability and governance purposes
 
-## 環境変数
+---
 
-バックエンドで使用可能な環境変数：
+## Future Roadmap
 
-### 基本設定
+### Phase 1: Enhanced Context Integration (In Progress)
+- **Complete MCP Implementation**: Currently, the integration with Slack, Notion, and other enterprise tools via Dedaluslabs.ai is using mock data
+- **Unified Knowledge Management**: Implement centralized management of multiple MCP sources through Dedaluslabs.ai
+- **Real-time Context Retrieval**: Enable dynamic fetching of relevant company knowledge during discussions
 
-| 変数名         | 説明                              | デフォルト値                                  |
-| -------------- | --------------------------------- | --------------------------------------------- |
-| `DEBUG`        | デバッグモード                    | `True`                                        |
-| `APP_NAME`     | アプリケーション名                | `Pangaea Kaigi API`                           |
-| `API_VERSION`  | API バージョン                    | `0.1.0`                                       |
-| `HOST`         | サーバーホスト                    | `0.0.0.0`                                     |
-| `PORT`         | サーバーポート                    | `8000`                                        |
-| `CORS_ORIGINS` | CORS 許可オリジン（カンマ区切り） | `http://localhost:3000,http://127.0.0.1:3000` |
+### Phase 2: Advanced Discussion Quality
+- **Context-Aware Debates**: Leverage internal company knowledge to generate more informed and relevant arguments
+- **Historical Decision Mining**: Use past decisions and their outcomes to improve current recommendations
+- **Custom Domain Adaptation**: Train on company-specific terminology and decision patterns
 
-### AI 設定
+### Phase 3: Enterprise Features
+- **Role-Based Access Control**: Secure access to sensitive discussions and context
+- **Integration APIs**: Connect with existing enterprise workflows and tools
+- **Advanced Analytics**: Provide insights into decision-making patterns and quality metrics
 
-| 変数名           | 説明            | 必須 |
-| ---------------- | --------------- | ---- |
-| `OPENAI_API_KEY` | OpenAI API キー | ✓    |
+### Phase 4: Scale & Optimization
+- **Multi-language Support**: Enable discussions in multiple languages for global teams
+- **Performance Optimization**: Handle larger-scale discussions with more agents and context
+- **Customizable Agent Personas**: Allow organizations to define their own agent roles and behaviors
 
-### MCP 統合設定（Dedalus Labs）
-
-会議の背景知識を取得するための設定です。
-
-| 変数名                     | 説明                                              | 必須                   |
-| -------------------------- | ------------------------------------------------- | ---------------------- |
-| `DEDALUS_API_KEY`          | [Dedalus Labs](https://dedaluslabs.ai)の API キー | ✓                      |
-| `ENABLE_CONTEXT_RETRIEVAL` | 背景知識取得の有効化                              | ✗ (デフォルト: `True`) |
-
-### Notion 統合（オプション）
-
-Notion から関連ドキュメントを検索します。
-
-| 変数名         | 説明                |
-| -------------- | ------------------- |
-| `NOTION_TOKEN` | Notion 統合トークン |
-
-**取得方法:**
-
-1. [Notion Integrations](https://www.notion.so/my-integrations)にアクセス
-2. 「New integration」をクリック
-3. 統合を作成し、トークンを取得
-4. 検索したいページに統合を招待
-
-### Slack 統合（オプション）
-
-Slack から過去の議論を検索します。
-
-| 変数名            | 説明                            |
-| ----------------- | ------------------------------- |
-| `SLACK_BOT_TOKEN` | Slack Bot Token (xoxb-で始まる) |
-| `SLACK_TEAM_ID`   | Slack Team ID                   |
-
-**取得方法:**
-
-1. [Slack API](https://api.slack.com/apps)にアクセス
-2. アプリを作成
-3. Bot Token Scopes に必要な権限を追加（`search:read`, `channels:history`, `groups:history`など）
-4. アプリをワークスペースにインストール
-
-### Atlassian 統合（オプション）
-
-Jira と Confluence から関連情報を検索します。
-
-| 変数名                | 説明                                                  |
-| --------------------- | ----------------------------------------------------- |
-| `ATLASSIAN_EMAIL`     | Atlassian アカウントのメールアドレス                  |
-| `ATLASSIAN_API_TOKEN` | Atlassian API トークン                                |
-| `ATLASSIAN_DOMAIN`    | Atlassian ドメイン（例: `your-domain.atlassian.net`） |
-
-**取得方法:**
-
-1. [Atlassian API tokens](https://id.atlassian.com/manage-profile/security/api-tokens)にアクセス
-2. 「Create API token」をクリック
-3. トークンを取得
-
-## MCP 統合について
-
-このプロジェクトは[Dedalus Labs](https://dedaluslabs.ai)を使用して、複数の MCP サービス（Notion、Slack、Atlassian など）から統一的に情報を取得します。
-
-### 仕組み
-
-1. 会議トピックが与えられると、関連キーワードを抽出
-2. Dedalus Labs 経由で各 MCP サービスに問い合わせ
-3. 取得した背景知識を AI エージェントに提供
-4. より文脈を理解した議論が可能に
-
-### 設定例
-
-最小限の設定（MCP 統合なし）:
-
-```bash
-OPENAI_API_KEY=sk-...
-DEDALUS_API_KEY=your-key
-ENABLE_CONTEXT_RETRIEVAL=False
-```
-
-Notion 統合のみ有効化:
-
-```bash
-OPENAI_API_KEY=sk-...
-DEDALUS_API_KEY=your-key
-NOTION_TOKEN=secret_...
-```
-
-すべての統合を有効化:
-
-```bash
-OPENAI_API_KEY=sk-...
-DEDALUS_API_KEY=your-key
-NOTION_TOKEN=secret_...
-SLACK_BOT_TOKEN=xoxb-...
-SLACK_TEAM_ID=T...
-ATLASSIAN_EMAIL=you@example.com
-ATLASSIAN_API_TOKEN=ATATT...
-ATLASSIAN_DOMAIN=your-domain.atlassian.net
-```
+Our primary goal is to complete the MCP integration, enabling the system to access comprehensive internal company knowledge and facilitate higher-quality strategic discussions informed by real organizational context.

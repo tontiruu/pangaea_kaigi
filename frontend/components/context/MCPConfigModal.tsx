@@ -28,7 +28,7 @@ const SOURCE_CONFIG = {
   Notion: {
     iconPath: '/tool/notion.png',
     gradient: 'linear-gradient(to bottom right, #1F1F1F, #000000)',
-    description: 'ドキュメントとナレッジベースから情報を取得',
+    description: 'Retrieve information from documents and knowledge base',
     setupFields: [
       { name: 'api_key', label: 'API Key', type: 'password', placeholder: 'secret_xxxxxxxxxxxxxxxx' },
       { name: 'database_id', label: 'Database ID', type: 'text', placeholder: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' }
@@ -38,7 +38,7 @@ const SOURCE_CONFIG = {
   Slack: {
     iconPath: '/tool/slack.png',
     gradient: 'linear-gradient(to bottom right, #611f69, #4A154B)',
-    description: 'チャンネルの会話履歴から情報を取得',
+    description: 'Retrieve information from channel conversation history',
     setupFields: [
       { name: 'bot_token', label: 'Bot User OAuth Token', type: 'password', placeholder: 'xoxb-xxxxxxxxxxxxx' },
       { name: 'workspace', label: 'Workspace Name', type: 'text', placeholder: 'my-workspace' }
@@ -48,7 +48,7 @@ const SOURCE_CONFIG = {
   Atlassian: {
     iconPath: '/tool/atlassian.png',
     gradient: 'linear-gradient(to bottom right, #0052CC, #0747A6)',
-    description: 'Jira/Confluenceから情報を取得',
+    description: 'Retrieve information from Jira/Confluence',
     setupFields: [
       { name: 'api_token', label: 'API Token', type: 'password', placeholder: 'ATATTxxxxxxxxxxxxxxxx' },
       { name: 'email', label: 'Email', type: 'email', placeholder: 'user@example.com' },
@@ -77,11 +77,11 @@ export function MCPConfigModal({ isOpen, onClose, onComplete, sources }: MCPConf
   };
 
   const handleSaveConnection = () => {
-    // モック: 実際はAPIコールでデータを保存
+    // Mock: In reality, save data via API call
     console.log('Saving connection for', selectedSource, formData);
     setSelectedSource(null);
     setFormData({});
-    // TODO: 実際はAPI呼び出し後に onComplete() を実行
+    // TODO: Execute onComplete() after actual API call
   };
 
   const handleComplete = () => {
@@ -91,15 +91,15 @@ export function MCPConfigModal({ isOpen, onClose, onComplete, sources }: MCPConf
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">
-      {/* オーバーレイ */}
+      {/* Overlay */}
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
         onClick={onClose}
       ></div>
 
-      {/* モーダル */}
+      {/* Modal */}
       <div className="relative w-full max-w-4xl max-h-[90vh] bg-white rounded-3xl shadow-2xl overflow-hidden animate-card-pop">
-        {/* ヘッダー */}
+        {/* Header */}
         <div className="px-8 py-6 border-b border-gray-200" style={{ background: 'linear-gradient(to right, rgba(0, 212, 168, 0.05), rgba(51, 224, 186, 0.05))' }}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -110,8 +110,8 @@ export function MCPConfigModal({ isOpen, onClose, onComplete, sources }: MCPConf
                 <FontAwesomeIcon icon={faKey} className="text-white text-xl" />
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-gray-800">MCP連携設定</h2>
-                <p className="text-sm text-gray-600">ナレッジソースとの連携を設定</p>
+                <h2 className="text-2xl font-bold text-gray-800">MCP Integration Settings</h2>
+                <p className="text-sm text-gray-600">Configure integration with knowledge sources</p>
               </div>
             </div>
             <button
@@ -123,15 +123,15 @@ export function MCPConfigModal({ isOpen, onClose, onComplete, sources }: MCPConf
           </div>
         </div>
 
-        {/* コンテンツ */}
+        {/* Content */}
         <div className="p-8 overflow-y-auto max-h-[calc(90vh-180px)]">
           {!selectedSource ? (
-            // ソース一覧
+            // Source list
             <div className="space-y-4">
               <div className="mb-6">
-                <h3 className="text-lg font-bold text-gray-800 mb-2">連携可能なサービス</h3>
+                <h3 className="text-lg font-bold text-gray-800 mb-2">Available Services for Integration</h3>
                 <p className="text-sm text-gray-600">
-                  背景知識を取得するためのサービスを設定してください
+                  Configure services to retrieve background knowledge
                 </p>
               </div>
 
@@ -169,12 +169,12 @@ export function MCPConfigModal({ isOpen, onClose, onComplete, sources }: MCPConf
                           {source.enabled ? (
                             <div className="flex items-center gap-1.5 px-3 py-1 bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-xs font-bold rounded-full shadow-md">
                               <FontAwesomeIcon icon={faCheckCircle} />
-                              設定済み
+                              Configured
                             </div>
                           ) : (
                             <div className="flex items-center gap-1.5 px-3 py-1 bg-gray-200 text-gray-600 text-xs font-bold rounded-full">
                               <FontAwesomeIcon icon={faCircle} className="text-[8px]" />
-                              未設定
+                              Not Configured
                             </div>
                           )}
                         </div>
@@ -190,14 +190,14 @@ export function MCPConfigModal({ isOpen, onClose, onComplete, sources }: MCPConf
                             }}
                           >
                             <FontAwesomeIcon icon={faPlus} />
-                            連携を設定
+                            Set Up Integration
                           </button>
                         )}
 
                         {source.enabled && (
                           <div className="flex items-center gap-2 text-xs text-gray-500">
                             <FontAwesomeIcon icon={faCheckCircle} style={{ color: 'var(--primary)' }} />
-                            <span>このサービスは設定済みです</span>
+                            <span>This service is already configured</span>
                           </div>
                         )}
                       </div>
@@ -217,13 +217,13 @@ export function MCPConfigModal({ isOpen, onClose, onComplete, sources }: MCPConf
               })}
             </div>
           ) : (
-            // 設定フォーム
+            // Configuration form
             <div className="animate-scale-in">
               <button
                 onClick={() => setSelectedSource(null)}
                 className="mb-6 text-sm text-gray-600 hover:text-gray-800 font-medium transition-colors duration-300 flex items-center gap-2"
               >
-                ← 戻る
+                ← Back
               </button>
 
               {(() => {
@@ -243,7 +243,7 @@ export function MCPConfigModal({ isOpen, onClose, onComplete, sources }: MCPConf
                         />
                       </div>
                       <div>
-                        <h3 className="text-2xl font-bold text-gray-800">{selectedSource} 連携設定</h3>
+                        <h3 className="text-2xl font-bold text-gray-800">{selectedSource} Integration Settings</h3>
                         <p className="text-sm text-gray-600">{config.description}</p>
                       </div>
                     </div>
@@ -272,9 +272,9 @@ export function MCPConfigModal({ isOpen, onClose, onComplete, sources }: MCPConf
                       <div className="flex items-start gap-3">
                         <FontAwesomeIcon icon={faGlobe} className="text-blue-500 mt-1" />
                         <div className="flex-1">
-                          <h4 className="text-sm font-semibold text-blue-800 mb-1">セットアップガイド</h4>
+                          <h4 className="text-sm font-semibold text-blue-800 mb-1">Setup Guide</h4>
                           <p className="text-xs text-blue-700 mb-2">
-                            {selectedSource}のAPI認証情報は、開発者ポータルから取得できます。
+                            {selectedSource} API credentials can be obtained from the developer portal.
                           </p>
                           <a
                             href={config.docUrl}
@@ -283,7 +283,7 @@ export function MCPConfigModal({ isOpen, onClose, onComplete, sources }: MCPConf
                             className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-700 transition-colors duration-300"
                           >
                             <FontAwesomeIcon icon={faExternalLinkAlt} />
-                            ドキュメントを開く
+                            Open Documentation
                           </a>
                         </div>
                       </div>
@@ -294,7 +294,7 @@ export function MCPConfigModal({ isOpen, onClose, onComplete, sources }: MCPConf
                         onClick={() => setSelectedSource(null)}
                         className="px-6 py-3 rounded-xl font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 transition-all duration-300"
                       >
-                        キャンセル
+                        Cancel
                       </button>
                       <button
                         onClick={handleSaveConnection}
@@ -304,7 +304,7 @@ export function MCPConfigModal({ isOpen, onClose, onComplete, sources }: MCPConf
                           background: 'linear-gradient(to right, var(--primary-dark), var(--primary), var(--primary-light))'
                         }}
                       >
-                        保存して連携
+                        Save and Integrate
                       </button>
                     </div>
                   </div>
@@ -314,13 +314,13 @@ export function MCPConfigModal({ isOpen, onClose, onComplete, sources }: MCPConf
           )}
         </div>
 
-        {/* フッター */}
+        {/* Footer */}
         {!selectedSource && (
           <div className="px-8 py-4 border-t border-gray-200 bg-gray-50">
             <div className="flex items-center justify-between">
               <div className="text-xs text-gray-600">
                 <FontAwesomeIcon icon={faCheckCircle} style={{ color: 'var(--primary)' }} className="mr-2" />
-                設定済み: {sources.filter(s => s.enabled).length}/{sources.length}
+                Configured: {sources.filter(s => s.enabled).length}/{sources.length}
               </div>
               <button
                 onClick={handleComplete}
@@ -329,7 +329,7 @@ export function MCPConfigModal({ isOpen, onClose, onComplete, sources }: MCPConf
                   background: 'linear-gradient(to right, var(--primary-dark), var(--primary))'
                 }}
               >
-                完了
+                Done
               </button>
             </div>
           </div>

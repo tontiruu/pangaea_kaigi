@@ -61,7 +61,7 @@ export function ContextCard({ context, index }: ContextCardProps) {
       onClick={() => setExpanded(!expanded)}
     >
       <div className="flex items-start gap-4">
-        {/* ソースアイコン */}
+        {/* Source icon */}
         <div
           className="flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center shadow-lg ring-2 ring-white/50 transition-all duration-300 hover:scale-110 hover:rotate-6 overflow-hidden bg-white"
         >
@@ -74,9 +74,9 @@ export function ContextCard({ context, index }: ContextCardProps) {
           />
         </div>
 
-        {/* コンテンツ */}
+        {/* Content */}
         <div className="flex-1 min-w-0">
-          {/* ヘッダー */}
+          {/* Header */}
           <div className="flex items-start justify-between gap-3 mb-2">
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1">
@@ -97,7 +97,7 @@ export function ContextCard({ context, index }: ContextCardProps) {
               </h3>
             </div>
 
-            {/* 展開ボタン */}
+            {/* Expand button */}
             <button
               className="flex-shrink-0 w-8 h-8 rounded-lg bg-white border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-all duration-300 hover:scale-110 shadow-sm"
               onClick={(e) => {
@@ -112,7 +112,7 @@ export function ContextCard({ context, index }: ContextCardProps) {
             </button>
           </div>
 
-          {/* コンテンツ */}
+          {/* Content */}
           <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
             {expanded ? context.content : truncateContent(context.content, 150)}
           </p>
@@ -128,11 +128,11 @@ export function ContextCard({ context, index }: ContextCardProps) {
               onClick={(e) => e.stopPropagation()}
             >
               <FontAwesomeIcon icon={faExternalLinkAlt} className="text-xs" />
-              リンクを開く
+              Open Link
             </a>
           )}
 
-          {/* メタデータ */}
+          {/* Metadata */}
           {expanded && context.metadata && (
             <div className="mt-3 pt-3 border-t border-gray-200">
               <div className="flex flex-wrap gap-2">

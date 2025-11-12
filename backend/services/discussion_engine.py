@@ -1,4 +1,4 @@
-"""議論フローを制御するエンジン"""
+"""Discussion flow control engine"""
 import uuid
 import asyncio
 from typing import List, Dict, Callable, Awaitable, Optional
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 class DiscussionEngine:
-    """議論フローを制御するエンジン"""
+    """Discussion flow control engine"""
 
     def __init__(
         self,
@@ -34,7 +34,7 @@ class DiscussionEngine:
         self.background_context: str = ""
 
     async def start_discussion(self, topic: str) -> DiscussionSession:
-        """議論を開始"""
+        """Start discussion"""
         session_id = f"session_{uuid.uuid4().hex[:8]}"
         self.session = DiscussionSession(
             id=session_id,
@@ -46,13 +46,13 @@ class DiscussionEngine:
             "topic": topic,
         })
 
-        # ファシリテーター初期化
+        # Initialize facilitator
         self.facilitator.initialize()
 
-        # 背景知識の取得
+        # Retrieve background knowledge
         await self._send_message(
             agent=self.facilitator.agent,
-            content="関連する背景知識を収集しています...",
+            content="Collecting relevant background knowledge...",
             message_type=MessageType.SYSTEM,
         )
 
@@ -66,19 +66,19 @@ class DiscussionEngine:
             })
             await self._send_message(
                 agent=self.facilitator.agent,
-                content=f"{len(context_items)}件の関連情報を取得しました",
+                content=f"Retrieved {len(context_items)} pieces of relevant information",
                 message_type=MessageType.SYSTEM,
             )
 
-        # アジェンダ作成
+        # Create agenda
         self.session.phase = DiscussionPhase.AGENDA_CREATION
         await self._send_message(
             agent=self.facilitator.agent,
-            content="議論を開始します。まずアジェンダを作成します...",
+            content="Starting discussion. First, creating agenda...",
             message_type=MessageType.SYSTEM,
         )
 
-        # ストリーミングは一旦無効化（安定性優先）
+        # Disable streaming for now (prioritize stability)
         agenda = await self.facilitator.create_agenda_with_context(
             topic,
             self.background_context,
@@ -90,11 +90,11 @@ class DiscussionEngine:
             "agenda": [item.model_dump() for item in agenda],
         })
 
-        # Agent生成
+        # Generate agents
         self.session.phase = DiscussionPhase.AGENT_GENERATION
         await self._send_message(
             agent=self.facilitator.agent,
-            content="参加者を選定します...",
+            content="Selecting participants...",
             message_type=MessageType.SYSTEM,
         )
 
@@ -104,16 +104,16 @@ class DiscussionEngine:
             "agents": [agent.model_dump() for agent in self.agents],
         })
 
-        # 各アジェンダについて議論
+        # Discuss each agenda item
         for idx, agenda_item in enumerate(self.session.agenda):
             self.session.current_agenda_index = idx
             await self._discuss_agenda_item(agenda_item)
 
-        # 議論完了
+        # Discussion complete
         self.session.phase = DiscussionPhase.COMPLETED
         await self._send_message(
             agent=self.facilitator.agent,
-            content=f"すべてのアジェンダについて合意が得られました。",
+            content=f"Agreement has been reached on all agenda items.",
             message_type=MessageType.SYSTEM,
         )
 
@@ -124,20 +124,20 @@ class DiscussionEngine:
         return self.session
 
     async def _discuss_agenda_item(self, agenda_item: AgendaItem):
-        """個別のアジェンダについて議論"""
+        """Discuss individual agenda item"""
         await self._send_message(
             agent=self.facilitator.agent,
-            content=f"アジェンダ {agenda_item.order}: {agenda_item.title}",
+            content=f"Agenda {agenda_item.order}: {agenda_item.title}",
             message_type=MessageType.SYSTEM,
         )
 
-        # Phase 1: 独立した意見出し
+        # Phase 1: Independent opinions
         opinions = await self._run_independent_opinions_phase(agenda_item)
 
-        # Phase 2: 投票
+        # Phase 2: Voting
         opinions = await self._run_voting_phase(opinions)
 
-        # Phase 3: 説得プロセス
+        # Phase 3: Persuasion process
         conclusion = await self._run_persuasion_phase(opinions, agenda_item)
 
         agenda_item.conclusion = conclusion
@@ -147,7 +147,7 @@ class DiscussionEngine:
         })
 
     async def _run_independent_opinions_phase(self, agenda_item: AgendaItem) -> List[Opinion]:
-        """Phase 1: 独立した意見出し"""
+        """Phase 1: Independent opinions"""
         self.session.phase = DiscussionPhase.INDEPENDENT_OPINIONS
 
         await self._send_event("phase_changed", {
@@ -157,11 +157,11 @@ class DiscussionEngine:
 
         await self._send_message(
             agent=self.facilitator.agent,
-            content="各参加者が独立して意見を述べます。",
+            content="Each participant will state their opinion independently.",
             message_type=MessageType.SYSTEM,
         )
 
-        # 全Agent並列で意見生成（背景知識を渡す）
+        # Generate opinions from all agents in parallel (passing background knowledge)
         tasks = []
         for agent in self.agents:
             task = self.agent_manager.generate_independent_opinion(
@@ -191,11 +191,11 @@ class DiscussionEngine:
                 message_type=MessageType.OPINION,
             )
 
-        logger.info(f"{len(opinions)}個の意見が提出されました")
+        logger.info(f"{len(opinions)} opinions submitted")
         return opinions
 
     async def _run_voting_phase(self, opinions: List[Opinion]) -> List[Opinion]:
-        """Phase 2: 投票"""
+        """Phase 2: Voting"""
         self.session.phase = DiscussionPhase.VOTING
 
         await self._send_event("phase_changed", {
@@ -205,11 +205,11 @@ class DiscussionEngine:
 
         await self._send_message(
             agent=self.facilitator.agent,
-            content="投票を開始します。",
+            content="Starting voting.",
             message_type=MessageType.SYSTEM,
         )
 
-        # 全Agent並列で投票
+        # Vote from all agents in parallel
         tasks = []
         for agent in self.agents:
             task = self.agent_manager.vote_for_opinion(agent=agent, opinions=opinions)
@@ -217,9 +217,9 @@ class DiscussionEngine:
 
         votes = await asyncio.gather(*tasks)
 
-        # 投票結果を集計（誰がどの意見に投票したかを記録）
+        # Aggregate voting results (record who voted for which opinion)
         vote_counter = Counter(votes)
-        vote_details = []  # 詳細な投票情報
+        vote_details = []  # Detailed voting information
         for idx, voted_opinion_id in enumerate(votes):
             voter = self.agents[idx]
             vote_details.append({
@@ -231,10 +231,10 @@ class DiscussionEngine:
         for opinion in opinions:
             opinion.votes = vote_counter.get(opinion.id, 0)
 
-        # 1票以上の意見のみ残す
+        # Keep only opinions with at least 1 vote
         filtered_opinions = [op for op in opinions if op.votes > 0]
 
-        # 意見の詳細情報を含めて送信
+        # Send with detailed opinion information
         await self._send_event("voting_result", {
             "votes": {op.id: op.votes for op in opinions},
             "vote_details": vote_details,
@@ -251,11 +251,11 @@ class DiscussionEngine:
             "remaining_opinions": len(filtered_opinions),
         })
 
-        logger.info(f"投票完了: {len(filtered_opinions)}個の意見が残りました")
+        logger.info(f"Voting complete: {len(filtered_opinions)} opinions remaining")
         return filtered_opinions
 
     async def _run_persuasion_phase(self, opinions: List[Opinion], agenda_item: AgendaItem) -> str:
-        """Phase 3: 説得プロセス"""
+        """Phase 3: Persuasion process"""
         self.session.phase = DiscussionPhase.PERSUASION
 
         await self._send_event("phase_changed", {
@@ -266,10 +266,10 @@ class DiscussionEngine:
         if len(opinions) == 1:
             return opinions[0].content
 
-        # 各Agentが支持している意見を記録
+        # Record which opinion each agent supports
         agent_opinions = {op.agent_id: op for op in opinions}
 
-        # 少数派から順に説得
+        # Persuade in order from minority opinions
         max_rounds = 10
         for round_num in range(max_rounds):
             opinions_sorted = sorted(opinions, key=lambda x: x.votes)
@@ -277,7 +277,7 @@ class DiscussionEngine:
             for opinion in opinions_sorted:
                 persuader = self.agent_manager.get_agent(opinion.agent_id)
 
-                # 説得
+                # Persuade
                 persuasion_msg, _ = await self.agent_manager.persuade(persuader, opinion)
                 await self._send_message(
                     agent=persuader,
@@ -285,11 +285,11 @@ class DiscussionEngine:
                     message_type=MessageType.PERSUASION,
                 )
 
-                # 他のAgentが応答
+                # Other agents respond
                 counter_arguments = []
                 for agent in self.agents:
                     if agent.id != persuader.id:
-                        # 各Agentが支持している意見と他の意見を取得
+                        # Get the opinion each agent supports and other opinions
                         your_opinion = agent_opinions.get(agent.id).content if agent.id in agent_opinions else ""
                         other_opinions_list = [op.content for op in opinions if op.agent_id != agent.id]
 
@@ -302,11 +302,11 @@ class DiscussionEngine:
                             message_type=MessageType.RESPONSE,
                         )
 
-                        # 反論があった場合は記録
+                        # Record if there's a counter-argument
                         if not is_agreement:
                             counter_arguments.append((agent, response_msg))
 
-                # 反論があった場合、元の意見の発言者が再応答
+                # If there are counter-arguments, original opinion holder responds
                 if counter_arguments:
                     for counter_agent, counter_msg in counter_arguments:
                         rebuttal_msg, _, maintains = await self.agent_manager.respond_to_counter_argument(
@@ -318,11 +318,11 @@ class DiscussionEngine:
                             message_type=MessageType.RESPONSE,
                         )
 
-                # 合意判定
+                # Check consensus
                 if await self._check_consensus(opinion):
                     await self._send_message(
                         agent=self.facilitator.agent,
-                        content=f"全員の合意が得られました！",
+                        content=f"Consensus has been reached!",
                         message_type=MessageType.CONCLUSION,
                     )
                     return opinion.content
@@ -330,7 +330,7 @@ class DiscussionEngine:
         return opinions[0].content
 
     async def _check_consensus(self, opinion: Opinion) -> bool:
-        """全員の合意を確認"""
+        """Check consensus from all participants"""
         tasks = []
         for agent in self.agents:
             task = self.agent_manager.make_final_decision(
@@ -348,7 +348,7 @@ class DiscussionEngine:
         content: str,
         message_type: MessageType,
     ):
-        """メッセージを送信"""
+        """Send message"""
         message = Message(
             id=f"msg_{uuid.uuid4().hex[:8]}",
             agent_id=agent.id,
@@ -364,19 +364,19 @@ class DiscussionEngine:
         })
 
     async def _send_event(self, event_type: str, data: dict):
-        """イベントを送信"""
+        """Send event"""
         await self.message_callback({
             "type": event_type,
             "data": data,
         })
 
     async def _retrieve_background_context(self, topic: str) -> list:
-        """議論トピックから背景知識を取得"""
+        """Retrieve background knowledge from discussion topic"""
         try:
-            # トピックからキーワードを抽出（簡易版）
+            # Extract keywords from topic (simplified version)
             keywords = self._extract_keywords(topic)
 
-            # コンテキスト取得
+            # Retrieve context
             context_items = await self.context_retriever.retrieve_context(topic, keywords)
             return context_items
 
@@ -385,14 +385,14 @@ class DiscussionEngine:
             return []
 
     def _extract_keywords(self, topic: str) -> List[str]:
-        """トピックからキーワードを抽出（簡易版）"""
-        # TODO: より高度なキーワード抽出を実装
-        # 現在は単純にスペース区切りで分割
+        """Extract keywords from topic (simplified version)"""
+        # TODO: Implement more sophisticated keyword extraction
+        # Currently just split by spaces
         keywords = [word.strip() for word in topic.split() if len(word.strip()) > 2]
-        return keywords[:5]  # 最大5個まで
+        return keywords[:5]  # Maximum 5 keywords
 
     def _generate_final_conclusion(self) -> str:
-        """最終結論を生成"""
+        """Generate final conclusion"""
         conclusions = [item.conclusion for item in self.session.agenda if item.conclusion]
         return "\n\n".join([
             f"{idx + 1}. {self.session.agenda[idx].title}: {conclusion}"

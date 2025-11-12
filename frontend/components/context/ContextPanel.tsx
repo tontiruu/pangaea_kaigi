@@ -59,7 +59,7 @@ export function ContextPanel({
         </div>
       )}
 
-      {/* 取得中: ローディング */}
+      {/* Loading: Retrieving */}
       {loading && (
         <div className="flex flex-col items-center justify-center py-12 animate-float-up">
           <div
@@ -68,34 +68,34 @@ export function ContextPanel({
           >
             <FontAwesomeIcon icon={faCircleNotch} className="text-white text-2xl animate-spin" />
           </div>
-          <p className="text-lg font-semibold text-gray-700 mb-2">背景知識を取得中...</p>
-          <p className="text-sm text-gray-500">関連情報を検索しています</p>
+          <p className="text-lg font-semibold text-gray-700 mb-2">Retrieving background knowledge...</p>
+          <p className="text-sm text-gray-500">Searching for relevant information</p>
         </div>
       )}
 
-      {/* エラー表示 */}
+      {/* Error display */}
       {error && !loading && (
         <div className="p-6 rounded-2xl bg-gradient-to-br from-red-50 to-pink-50 border-2 border-red-200 animate-card-pop">
           <div className="flex items-start gap-3">
             <FontAwesomeIcon icon={faExclamationTriangle} className="text-red-500 text-xl mt-1" />
             <div>
-              <h3 className="font-bold text-red-800 mb-1">エラーが発生しました</h3>
+              <h3 className="font-bold text-red-800 mb-1">An error occurred</h3>
               <p className="text-sm text-red-700">{error}</p>
               <button
                 onClick={onRetrieve}
                 className="mt-3 px-4 py-2 rounded-xl bg-red-500 text-white text-sm font-semibold hover:bg-red-600 transition-colors duration-300"
               >
-                再試行
+                Retry
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* 取得後: コンテキスト表示 */}
+      {/* After retrieval: Context display */}
       {hasRetrieved && !loading && !error && contexts.length > 0 && (
         <div className="space-y-4">
-          {/* ヘッダー */}
+          {/* Header */}
           <div className="flex items-center justify-between animate-fade-in">
             <div className="flex items-center gap-3">
               <div
@@ -106,29 +106,29 @@ export function ContextPanel({
               </div>
               <div>
                 <h3 className="font-bold text-lg text-gray-800">
-                  背景知識（{contexts.length}件）
+                  Background Knowledge ({contexts.length} items)
                 </h3>
                 <p className="text-xs text-gray-500">
-                  議論に関連する情報を取得しました
+                  Retrieved relevant information for the discussion
                 </p>
               </div>
             </div>
           </div>
 
-          {/* コンテキストカード一覧 */}
+          {/* Context card list */}
           <div className="space-y-3 max-h-96 overflow-y-auto pr-2">
             {contexts.map((context, index) => (
               <ContextCard key={index} context={context} index={index} />
             ))}
           </div>
 
-          {/* アクションボタン */}
+          {/* Action buttons */}
           <div className="flex gap-3 pt-4 border-t border-gray-200 animate-scale-in" style={{ animationDelay: `${contexts.length * 100 + 200}ms` }}>
             <button
               onClick={onRetrieve}
               className="px-6 py-3 rounded-2xl font-semibold text-gray-700 bg-white border border-gray-200 shadow-md hover:shadow-lg transition-all duration-300"
             >
-              再取得
+              Retrieve Again
             </button>
             <button
               onClick={onStartDiscussion}
@@ -138,21 +138,21 @@ export function ContextPanel({
               }}
             >
               <span className="text-lg group-hover:scale-110 transition-transform duration-300">▶</span>
-              この背景知識を使って議論を開始
+              Start Discussion with This Background Knowledge
             </button>
           </div>
         </div>
       )}
 
-      {/* 結果なし */}
+      {/* No results */}
       {hasRetrieved && !loading && !error && contexts.length === 0 && (
         <div className="p-8 rounded-2xl bg-gradient-to-br from-gray-50 to-neutral-100 border border-white/30 text-center animate-scale-in">
           <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
             <FontAwesomeIcon icon={faLightbulb} className="text-gray-500 text-2xl" />
           </div>
-          <h3 className="font-bold text-gray-700 mb-2">背景知識が見つかりませんでした</h3>
+          <h3 className="font-bold text-gray-700 mb-2">No background knowledge found</h3>
           <p className="text-sm text-gray-600 mb-4">
-            このトピックに関連する情報が取得できませんでした
+            Could not retrieve relevant information for this topic
           </p>
           <button
             onClick={onStartDiscussion}
@@ -161,7 +161,7 @@ export function ContextPanel({
               background: 'linear-gradient(to right, var(--primary-dark), var(--primary))'
             }}
           >
-            背景知識なしで議論を開始
+            Start Discussion Without Background Knowledge
           </button>
         </div>
       )}

@@ -1,102 +1,102 @@
-"""プロンプトテンプレート"""
+"""Prompt Templates"""
 
-FACILITATOR_CREATE_AGENDA = """あなたは経験豊富なファシリテーターです。以下の議題について、ゴールに到達するための具体的な問いのアジェンダを作成してください。
+FACILITATOR_CREATE_AGENDA = """You are an experienced facilitator. Please create an agenda of specific questions to reach the goal for the following topic.
 
-議題: {topic}
+Topic: {topic}
 
-**重要な制約**:
-- アジェンダは「どう議論するか」「どう進めるか」といった進行に関する内容は一切含めないでください。意見を求める様なアジェンダにすべきです。どう進めていくかはファシリテーターの責任で参加者に聞くことではありません。
-- 参加者は進め方ではなく、その問いに対する具体的な答え・意見を出します
-- あなた（ファシリテーター）が会議のプロセスを完全に管理します
+**Important Constraints**:
+- The agenda must NOT include any content about "how to discuss" or "how to proceed" with the discussion. The agenda should solicit opinions. It is the facilitator's responsibility to manage the process, not something to ask participants about.
+- Participants will provide specific answers and opinions to the questions, not process suggestions
+- You (the facilitator) completely manage the meeting process
 
-アジェンダ作成の指針：
-1. まずどのような小さな議題を順番に話していけば最終的な議題の答えにたどり着けるかを考える
-2. その小さな議題を3〜5個考え、参加者が意見を出しやすい様な議題になっているか考え、アジェンダに追加する
-3. 各問いは明確で、具体的な回答を求めるものにする
-4. 問いの順序を論理的に設計し、最終的なゴールに到達できるようにする
-5. 各問いには、参加者が何を答えるべきかを明確にした説明を含める
-6. 最後の議題は、この会議の大元の議題の最終的な答えが出る様な議題にする
+Agenda Creation Guidelines:
+1. First, consider what smaller sub-topics should be discussed in sequence to ultimately arrive at the answer to the final topic
+2. Think of 3-5 smaller topics and ensure they are formulated in a way that makes it easy for participants to contribute opinions, then add them to the agenda
+3. Make each question clear and specific, requiring concrete responses
+4. Design the sequence of questions logically so that the final goal can be reached
+5. Include an explanation for each question that clarifies what participants should answer
+6. The final topic should be one that produces the ultimate answer to the main topic of this meeting
 
-出力形式（JSON）:
-[{{"title": "具体的な問いの形式のタイトル", "description": "この問いで参加者が答えるべき具体的な内容", "order": 1, "conclusion": "この問いの最終的な答え"}}, ...]
+Output Format (JSON):
+[{{"title": "Title in the form of a specific question", "description": "The specific content participants should address in their answers to this question", "order": 1, "conclusion": "The final answer to this question"}}, ...]
 
-JSON形式で出力してください。"""
+Please output in JSON format."""
 
-FACILITATOR_GENERATE_AGENTS = """あなたは経験豊富なファシリテーターです。以下の議題について、多角的で緻密な議論を行うために適切な参加者を4〜6人生成してください。
+FACILITATOR_GENERATE_AGENTS = """You are an experienced facilitator. Please generate 4-6 appropriate participants to conduct a multi-faceted and thorough discussion on the following topic.
 
-議題: {topic}
+Topic: {topic}
 
-**参加者の役割**:
-- 各参加者は提示される「問い」に対して、自身の観点から具体的な答え・意見を出します
-- 議論の進め方ではなく、議論の中身（具体的な答え）に注力します
-- 異なる専門性や視点を持つことで、多角的な意見が集まるようにします
+**Participant Roles**:
+- Each participant provides specific answers and opinions to the presented questions from their own perspective
+- They focus on the substance of the discussion (specific answers), not on how to conduct the discussion
+- By having different areas of expertise and viewpoints, a diverse range of opinions is gathered
 
-参加者生成の指針：
-1. 議題に関連する異なる専門性・立場を持つ人物を選ぶ
-2. 各参加者の観点は具体的で明確にする
-3. 参加者同士の視点が重複しないようにする
-4. 実務的・論理的な意見を出せる人物を選ぶ
+Participant Generation Guidelines:
+1. Select individuals with different areas of expertise and positions relevant to the topic
+2. Make each participant's perspective specific and clear
+3. Ensure that participants' viewpoints do not overlap
+4. Select individuals who can provide practical and logical opinions
 
-出力形式（JSON）:
-[{{"name": "参加者の名前", "perspective": "参加者の具体的な観点・専門性・立場"}}, ...]
+Output Format (JSON):
+[{{"name": "Participant's name", "perspective": "Participant's specific perspective, expertise, and position"}}, ...]
 
-JSON形式で出力してください。"""
+Please output in JSON format."""
 
-AGENT_INDEPENDENT_OPINION = """あなたは{name}として、以下の観点を持って議論に参加しています：
+AGENT_INDEPENDENT_OPINION = """You are participating in this discussion as {name} with the following perspective:
 {perspective}
 
 {background_context}
 
-現在のアジェンダ（問い）: {agenda_title}
+Current agenda (question): {agenda_title}
 {agenda_description}
 
-**重要な制約**:
-- 「議論の進め方」や「どう進めるか」といったプロセスについては一切語らないでください
-- ファシリテーターが会議のプロセスを管理します
-- あなたはアジェンダの議題に対する具体的な答え・意見のみを述べてください
-- 抽象的な提案ではなく、具体的で実行可能な答えを出してください
-- 上記の背景知識（もしあれば）を参考にして、より的確な意見を述べてください
+**Important Constraints**:
+- Do NOT discuss the "process of discussion" or "how to proceed" at all
+- The facilitator manages the meeting process
+- You should only state specific answers and opinions regarding the agenda topic
+- Provide concrete and actionable answers, not abstract proposals
+- If background knowledge is provided above, refer to it to give more accurate opinions
 
-この議題に対して、あなたの観点から具体的な答えを述べてください：
+Please state your specific answer to this topic from your perspective:
 
-結論: [この問いに対するあなたの具体的な答え]
-根拠: [その答えを支持する論理的な理由]
+Conclusion: [Your specific answer to this question]
+Rationale: [Logical reasons supporting your answer]
 
-短く端的に、要点を押さえて発言してください。"""
+Please speak briefly and concisely, focusing on key points."""
 
-AGENT_VOTE = """あなたは{name}です。
+AGENT_VOTE = """You are {name}.
 
-以下の意見が提示されています：
+The following opinions have been presented:
 {opinions}
 
-論理的に考えて、最も優れていると思う意見を1つ選んでください。
-選んだ意見のIDのみを回答してください。例: opinion_001"""
+Please think logically and select the one opinion you believe is the best.
+Respond only with the ID of the selected opinion. Example: opinion_001"""
 
-AGENT_PERSUASION = """あなたは{name}です。
+AGENT_PERSUASION = """You are {name}.
 
-あなたが支持した意見: {your_opinion}
+The opinion you supported: {your_opinion}
 
-この意見が論理的に最も優れている理由を、他の参加者に説明してください。
-短く端的に、核心を突いた説得を行ってください。"""
+Please explain to other participants why this opinion is logically the best.
+Provide a brief, concise, and compelling persuasive argument."""
 
-AGENT_RESPOND_TO_PERSUASION = """あなたは{name}です。
+AGENT_RESPOND_TO_PERSUASION = """You are {name}.
 
-あなたが支持していた意見: {your_opinion}
-他の参加者が支持していた意見: {other_opinions}
-以下の説得が行われました: {persuasion_message}
+The opinion you supported: {your_opinion}
+The opinion other participants supported: {other_opinions}
+The following persuasion was presented: {persuasion_message}
 
-この説得に対して、あなたの考えを述べてください。
-合意できるのか、反論するのかを表明し、合意の場合は理由、反論の場合は、相手を説得する理由を述べてください。
+Please state your thoughts regarding this persuasion.
+Indicate whether you can agree or wish to counter-argue, and if you agree, state your reasons; if you counter-argue, state your reasons for persuading the other party.
 
-出力形式：
-判断: [合意/反論]
-理由: [あなたの考えを簡潔に述べてください]"""
+Output Format:
+Decision: [Agree/Counter-argue]
+Reason: [Please briefly state your thoughts]"""
 
-AGENT_FINAL_DECISION = """あなたは{name}です。
+AGENT_FINAL_DECISION = """You are {name}.
 
-提案された意見: {proposed_opinion}
+Proposed opinion: {proposed_opinion}
 
-この意見に合意しますか？
+Do you agree with this opinion?
 
-判断: Yes/No
-理由: [理由を簡潔に]"""
+Decision: Yes/No
+Reason: [Briefly state your reason]"""

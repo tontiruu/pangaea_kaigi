@@ -1,9 +1,9 @@
-背景と対立軸：
-現状: 5年で8000億の赤字。財務を圧迫。
-継続の論理: 「経済圏」の核心（顧客LTVが1.5倍）。
-撤退の論理: 財務悪化が限界。「サンクコスト・バイアス」の可能性。
-会議の目的： サンクコスト・バイアスを排除し、内部資料（CFO, CMO, CTOのレポートを仮定）に基づき、
-以下の3つの選択肢から「企業価値を最大化」する結論を、論理的・MECEに導き出す。
-継続投資
-戦略転換（MVNO化）
-撤退・売却
+Background and Conflict:
+Current Situation: ¥800 billion deficit over five years. Financial pressures.
+Logic for Continuing: Core of "economic sphere" (customer LTV is 1.5x).
+Logic for Withdrawal: Financial deterioration has reached its limit. Possibility of "sunk cost bias."
+Objective of the Meeting: Eliminate sunk cost bias and, based on internal documents (assuming reports from the CFO, CMO, and CTO),
+draw a logical, MECE-based conclusion from the following three options that will "maximize corporate value."
+Continue Investment
+Strategic Shift (Become an MVNO)
+Withdraw/Sell
