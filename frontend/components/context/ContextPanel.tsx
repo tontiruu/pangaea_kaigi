@@ -1,5 +1,5 @@
 /**
- * 背景知識パネルコンポーネント
+ * Background Knowledge Panel Component
  */
 'use client';
 
@@ -32,7 +32,7 @@ export function ContextPanel({
 }: ContextPanelProps) {
   return (
     <div className="w-full">
-      {/* 取得前: ボタン表示 */}
+      {/* Before retrieval: Button display */}
       {!hasRetrieved && !loading && (
         <div className="flex gap-3 animate-scale-in" style={{ animationDelay: '0.5s' }}>
           {/* <button
@@ -44,7 +44,7 @@ export function ContextPanel({
               className="text-lg transition-transform duration-300 group-hover:rotate-12"
               style={{ color: 'var(--accent-warning)' }}
             />
-            背景知識を取得
+            Retrieve Background Knowledge
           </button> */}
           <button
             onClick={onStartDiscussion}
@@ -54,7 +54,7 @@ export function ContextPanel({
             }}
           >
             <span className="text-lg">▶</span>
-            議論を開始
+            Start Discussion
           </button>
         </div>
       )}

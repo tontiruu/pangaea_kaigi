@@ -1,5 +1,5 @@
 /**
- * MCP設定モーダルコンポーネント
+ * MCP Configuration Modal Component
  */
 'use client';
 

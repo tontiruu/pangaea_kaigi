@@ -1,5 +1,5 @@
 /**
- * コンテキストカードコンポーネント
+ * Context Card Component
  */
 'use client';
 

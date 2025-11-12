@@ -1,5 +1,5 @@
 /**
- * ソース状態表示バッジコンポーネント
+ * Source Status Badge Component
  */
 'use client';
 
